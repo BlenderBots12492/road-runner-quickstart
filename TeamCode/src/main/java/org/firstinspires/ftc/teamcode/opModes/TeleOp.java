@@ -138,12 +138,12 @@ public class TeleOp extends LinearOpMode {
                 leftFront.setPower(gamepad1_leftstick_y - gamepad1_leftstick_x + gamepad1_rightstick_x);
                 leftBack.setPower(gamepad1_leftstick_y + gamepad1_leftstick_x + gamepad1_rightstick_x);
 
-                telemetry.addLine().addData("SlidePos:", slideExtVal.position);
-                telemetry.addLine().addData("SlideAng:", slideRotVal.position);
-                telemetry.addLine().addData("SlidePos2:", slideExtenderEnc.getCurrentPosition());
-                telemetry.addLine().addData("SlideAng2:", slideRotatorEnc.getCurrentPosition());
+                telemetry.addLine().addData("SlidePos", slideExtVal.position);
+                telemetry.addLine().addData("SlideAng", slideRotVal.position);
+                telemetry.addLine().addData("SlidePos2", slideExtenderEnc.getCurrentPosition());
+                telemetry.addLine().addData("SlideAng2", slideRotatorEnc.getCurrentPosition());
                 telemetry.addLine();
-                telemetry.addLine().addData("slideExtenderEnc.isBusy() = ", slideExtenderEnc.isBusy());
+                telemetry.addLine().addData("slideExtenderEnc.isBusy()", slideExtenderEnc.isBusy());
 
                 telemetry.addLine().addData("test", leftFront.getCurrentPosition());
 
