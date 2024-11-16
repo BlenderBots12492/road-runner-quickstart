@@ -50,7 +50,7 @@ public class TeleOp extends LinearOpMode {
 
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightSlide.setDirection(DcMotorSimple.Direction.REVERSE);
+        //leftSlide.setDirection(DcMotorSimple.Direction.REVERSE);
         slideRotator.setDirection(DcMotorSimple.Direction.REVERSE);
         /*
         slideRotatorEnc.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -75,10 +75,10 @@ public class TeleOp extends LinearOpMode {
                 //slides extend / retract
                 PositionVelocityPair slideExtVal = slideExtention.getPositionAndVelocity();
                 PositionVelocityPair slideRotVal = slideRotatorEnc1.getPositionAndVelocity();
-                if (slideExtVal.position*Math.cos(slideRotVal.position*0.5) > 1000) {
+                /*if (slideExtVal.position*Math.cos(slideRotVal.position*0.5) > 1000) {
                     leftSlide.setPower(-1);
                     rightSlide.setPower(-1);
-                } else if (gamepad2.left_stick_y == 0) {
+                } else*/ if (gamepad2.left_stick_y == 0) {
                     leftSlide.setPower(0.06);
                     rightSlide.setPower(0.06);
                 } else if (/*slideExtVal.position*Math.cos(slideRotVal.position*0.5) < 1000*/true) {
