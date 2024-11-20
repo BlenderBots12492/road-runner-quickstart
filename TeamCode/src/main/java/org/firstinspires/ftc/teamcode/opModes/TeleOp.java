@@ -82,9 +82,12 @@ public class TeleOp extends LinearOpMode {
                     leftSlide.setPower(0.06);
                     rightSlide.setPower(0.06);
                 } else if (slideExtVal.position*Math.cos(slideRotVal.position*0.0244) < 1300) {
-                        leftSlide.setPower(-gamepad2.left_stick_y);
-                        rightSlide.setPower(-gamepad2.left_stick_y);
-                    }
+                    leftSlide.setPower(-gamepad2.left_stick_y);
+                    rightSlide.setPower(-gamepad2.left_stick_y);
+                } else if (gamepad2.left_stick_y > 0) {
+                    leftSlide.setPower(-gamepad2.left_stick_y);
+                    rightSlide.setPower(-gamepad2.left_stick_y);
+                }
                 /*
                 if (gamepad2.left_stick_y == 0) {
                     leftSlide.setPower(0.06);
@@ -115,16 +118,16 @@ public class TeleOp extends LinearOpMode {
                     }
 
                     if (gamepad2.left_stick_x != 0) {
-                        clawArm.setPosition((gamepad2.left_stick_x) / 2);
+                        clawArm.setPosition((gamepad2.left_stick_x) );
                     }
 
                     clawWrist.setPosition(clawWristPos);
 
-                    if (gamepad2.right_trigger > 0.2 && clawPos < 0.6) {
-                        clawPos += 0.07;
+                    if (gamepad2.right_trigger > 0.5 && clawPos < 0.6) {
+                        clawPos += 0.08;
                     }
-                    if (gamepad2.right_bumper && clawPos > 0.3) {
-                        clawPos -= 0.07;
+                    if (gamepad2.right_bumper && clawPos > 0.1) {
+                        clawPos -= 0.08;
                     }
                     claw.setPosition(clawPos);
 
@@ -152,8 +155,10 @@ public class TeleOp extends LinearOpMode {
                     telemetry.addLine().addData("SlideAng2", slideRotatorEnc.getCurrentPosition());
                     telemetry.addLine();
                     telemetry.addLine().addData("test", slideExtVal.position*Math.cos(slideRotVal.position*0.0244));
+                    telemetry.addLine().addData("clawPos", clawPos);
 
-                    telemetry.update();
+
+                telemetry.update();
 
             }
         }
