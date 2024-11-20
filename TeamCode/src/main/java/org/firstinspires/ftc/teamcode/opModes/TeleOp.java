@@ -75,16 +75,16 @@ public class TeleOp extends LinearOpMode {
                 //slides extend / retract
                 PositionVelocityPair slideExtVal = slideExtention.getPositionAndVelocity();
                 PositionVelocityPair slideRotVal = slideRotatorEnc1.getPositionAndVelocity();
-                /*if (slideExtVal.position*Math.cos(slideRotVal.position*0.5) > 1000) {
+                if (slideExtVal.position*Math.cos(slideRotVal.position*0.0244) > 1320) {
                     leftSlide.setPower(-1);
                     rightSlide.setPower(-1);
-                } else*/ if (gamepad2.left_stick_y == 0) {
+                } else if (gamepad2.left_stick_y == 0) {
                     leftSlide.setPower(0.06);
                     rightSlide.setPower(0.06);
-                } else if (/*slideExtVal.position*Math.cos(slideRotVal.position*0.5) < 1000*/true) {
-                    leftSlide.setPower(-gamepad2.left_stick_y);
-                    rightSlide.setPower(-gamepad2.left_stick_y);
-                }
+                } else if (slideExtVal.position*Math.cos(slideRotVal.position*0.0244) < 1300) {
+                        leftSlide.setPower(-gamepad2.left_stick_y);
+                        rightSlide.setPower(-gamepad2.left_stick_y);
+                    }
                 /*
                 if (gamepad2.left_stick_y == 0) {
                     leftSlide.setPower(0.06);
@@ -96,58 +96,64 @@ public class TeleOp extends LinearOpMode {
                     leftSlide.setPower(-gamepad2.left_stick_y);
                     rightSlide.setPower(-gamepad2.left_stick_y);
                 }*/
-                //slides rotate
-                if (gamepad2.right_stick_y == 0) {
-                    slideRotator.setPower(0);
-                } else {
-                    slideRotator.setPower(-gamepad2.right_stick_y);
-                }
+                    //slides rotate
+                    if (gamepad2.right_stick_y == 0) {
+                        slideRotator.setPower(0);
+                    } else {
+                        slideRotator.setPower(-gamepad2.right_stick_y);
+                    }
 
 
-                //Get Claw Data
-                //if (gamepad2.right_stick_x > 0.1 && clawArmPos < 0.48 ) { clawArmPos += 0.00005; }
-                //if (gamepad2.right_stick_x < -0.1 && clawArmPos > 0.47 ) { clawArmPos -= 0.00005; }
-                if (gamepad2.right_stick_x < -0.1 && clawWristPos > 0 ) { clawWristPos -= 0.004; }
-                if (gamepad2.right_stick_x > 0.1 && clawWristPos < 1 ) { clawWristPos += 0.004; }
+                    //Get Claw Data
+                    //if (gamepad2.right_stick_x > 0.1 && clawArmPos < 0.48 ) { clawArmPos += 0.00005; }
+                    //if (gamepad2.right_stick_x < -0.1 && clawArmPos > 0.47 ) { clawArmPos -= 0.00005; }
+                    if (gamepad2.right_stick_x < -0.1 && clawWristPos > 0) {
+                        clawWristPos -= 0.004;
+                    }
+                    if (gamepad2.right_stick_x > 0.1 && clawWristPos < 1) {
+                        clawWristPos += 0.004;
+                    }
 
-                if (gamepad2.left_stick_x != 0) {
-                    clawArm.setPosition((gamepad2.left_stick_x)/2);
-                }
+                    if (gamepad2.left_stick_x != 0) {
+                        clawArm.setPosition((gamepad2.left_stick_x) / 2);
+                    }
 
-                clawWrist.setPosition(clawWristPos);
+                    clawWrist.setPosition(clawWristPos);
 
-                if (gamepad2.right_trigger > 0.1 && clawPos < 0.6 ) { clawPos += 0.05; }
-                if (gamepad2.right_bumper && clawPos > 0.3 ) { clawPos -= 0.05; }
-                claw.setPosition(clawPos);
+                    if (gamepad2.right_trigger > 0.2 && clawPos < 0.6) {
+                        clawPos += 0.07;
+                    }
+                    if (gamepad2.right_bumper && clawPos > 0.3) {
+                        clawPos -= 0.07;
+                    }
+                    claw.setPosition(clawPos);
 
-                // here we are defining the variables for the gamepad motor powers
-                if (0.5 > gamepad1.right_trigger) {
-                    gamepad1_leftstick_x = -1 * gamepad1.left_stick_x;
-                    gamepad1_leftstick_y = -1 * gamepad1.left_stick_y;
-                    gamepad1_rightstick_x = gamepad1.right_stick_x;
-                    gamepad1_rightstick_y = gamepad1.right_stick_y;
-                } else {
-                    gamepad1_leftstick_x = -0.4 * gamepad1.left_stick_x;
-                    gamepad1_leftstick_y = -0.4 * gamepad1.left_stick_y;
-                    gamepad1_rightstick_x = 0.4 * gamepad1.right_stick_x;
-                    gamepad1_rightstick_y = 0.4 * gamepad1.right_stick_y;
-                }
-                // here we are defining the variables for the drive system
-                rightFront.setPower(gamepad1_leftstick_y + gamepad1_leftstick_x - gamepad1_rightstick_x);
-                rightBack.setPower(gamepad1_leftstick_y - gamepad1_leftstick_x - gamepad1_rightstick_x);
-                leftFront.setPower(gamepad1_leftstick_y - gamepad1_leftstick_x + gamepad1_rightstick_x);
-                leftBack.setPower(gamepad1_leftstick_y + gamepad1_leftstick_x + gamepad1_rightstick_x);
+                    // here we are defining the variables for the gamepad motor powers
+                    if (0.5 > gamepad1.right_trigger) {
+                        gamepad1_leftstick_x = -1 * gamepad1.left_stick_x;
+                        gamepad1_leftstick_y = -1 * gamepad1.left_stick_y;
+                        gamepad1_rightstick_x = gamepad1.right_stick_x;
+                        gamepad1_rightstick_y = gamepad1.right_stick_y;
+                    } else {
+                        gamepad1_leftstick_x = -0.4 * gamepad1.left_stick_x;
+                        gamepad1_leftstick_y = -0.4 * gamepad1.left_stick_y;
+                        gamepad1_rightstick_x = 0.4 * gamepad1.right_stick_x;
+                        gamepad1_rightstick_y = 0.4 * gamepad1.right_stick_y;
+                    }
+                    // here we are defining the variables for the drive system
+                    rightFront.setPower(gamepad1_leftstick_y + gamepad1_leftstick_x - gamepad1_rightstick_x);
+                    rightBack.setPower(gamepad1_leftstick_y - gamepad1_leftstick_x - gamepad1_rightstick_x);
+                    leftFront.setPower(gamepad1_leftstick_y - gamepad1_leftstick_x + gamepad1_rightstick_x);
+                    leftBack.setPower(gamepad1_leftstick_y + gamepad1_leftstick_x + gamepad1_rightstick_x);
 
-                telemetry.addLine().addData("SlidePos", slideExtVal.position);
-                telemetry.addLine().addData("SlideAng", slideRotVal.position);
-                telemetry.addLine().addData("SlidePos2", slideExtenderEnc.getCurrentPosition());
-                telemetry.addLine().addData("SlideAng2", slideRotatorEnc.getCurrentPosition());
-                telemetry.addLine();
-                telemetry.addLine().addData("slideExtenderEnc.isBusy()", slideExtenderEnc.isBusy());
+                    telemetry.addLine().addData("SlidePos", slideExtVal.position);
+                    telemetry.addLine().addData("SlideAng", slideRotVal.position);
+                    telemetry.addLine().addData("SlidePos2", slideExtenderEnc.getCurrentPosition());
+                    telemetry.addLine().addData("SlideAng2", slideRotatorEnc.getCurrentPosition());
+                    telemetry.addLine();
+                    telemetry.addLine().addData("test", slideExtVal.position*Math.cos(slideRotVal.position*0.0244));
 
-                telemetry.addLine().addData("test", leftFront.getCurrentPosition());
-
-                telemetry.update();
+                    telemetry.update();
 
             }
         }
