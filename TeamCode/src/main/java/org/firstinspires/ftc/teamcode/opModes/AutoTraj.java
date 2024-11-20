@@ -24,7 +24,7 @@ public class AutoTraj extends LinearOpMode {
     public void runOpMode() {
         Pose2d initialPose = new Pose2d(11.8, 61.7, Math.toRadians(90));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
-        int heading = 0;
+        int heading = 180;
         int x1 = 0;
         int y1 = 10;
         int x2 = 10;
