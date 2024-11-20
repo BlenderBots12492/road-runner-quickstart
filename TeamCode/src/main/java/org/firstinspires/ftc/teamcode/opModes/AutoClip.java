@@ -225,7 +225,6 @@ public class AutoClip extends LinearOpMode {
             slidePressure(1000, -1);
             //openClaw();
             slide(100, -1);
-
         }
     }
 }
