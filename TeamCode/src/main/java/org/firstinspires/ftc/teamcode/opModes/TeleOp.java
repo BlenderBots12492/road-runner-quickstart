@@ -75,10 +75,7 @@ public class TeleOp extends LinearOpMode {
                 //slides extend / retract
                 PositionVelocityPair slideExtVal = slideExtention.getPositionAndVelocity();
                 PositionVelocityPair slideRotVal = slideRotatorEnc1.getPositionAndVelocity();
-                if (slideExtVal.position*Math.cos(slideRotVal.position*0.0244) > 1320) {
-                    leftSlide.setPower(-1);
-                    rightSlide.setPower(-1);
-                } else if (gamepad2.left_stick_y == 0) {
+                if (gamepad2.left_stick_y == 0) {
                     leftSlide.setPower(0.06);
                     rightSlide.setPower(0.06);
                 } else if (slideExtVal.position*Math.cos(slideRotVal.position*0.0244) < 1300) {
@@ -104,16 +101,20 @@ public class TeleOp extends LinearOpMode {
                         slideRotator.setPower(0);
                     } else {
                         slideRotator.setPower(-gamepad2.right_stick_y);
+                        if (slideExtVal.position*Math.cos(slideRotVal.position*0.0244) > 1300) {
+                            leftSlide.setPower(-1);
+                            rightSlide.setPower(-1);
+                        }
                     }
 
 
                     //Get Claw Data
                     //if (gamepad2.right_stick_x > 0.1 && clawArmPos < 0.48 ) { clawArmPos += 0.00005; }
                     //if (gamepad2.right_stick_x < -0.1 && clawArmPos > 0.47 ) { clawArmPos -= 0.00005; }
-                    if (gamepad2.right_stick_x < -0.1 && clawWristPos > 0) {
+                    if (gamepad2.right_stick_x < -0.9 && clawWristPos > 0) {
                         clawWristPos -= 0.004;
                     }
-                    if (gamepad2.right_stick_x > 0.1 && clawWristPos < 1) {
+                    if (gamepad2.right_stick_x > 0.9 && clawWristPos < 1) {
                         clawWristPos += 0.004;
                     }
 
@@ -126,7 +127,7 @@ public class TeleOp extends LinearOpMode {
                     if (gamepad2.right_trigger > 0.5 && clawPos < 0.6) {
                         clawPos += 0.08;
                     }
-                    if (gamepad2.right_bumper && clawPos > 0.1) {
+                    if (gamepad2.right_bumper && clawPos > 0) {
                         clawPos -= 0.08;
                     }
                     claw.setPosition(clawPos);
