@@ -29,10 +29,8 @@ public class AutoTraj extends LinearOpMode {
     private Servo claw = hardwareMap.get(Servo.class, "claw");
 
     public class LiftDown implements Action {
-        private boolean initialized = false;
-
         @Override
-        public boolean run(@NonNull TelemetryPacket packet) {
+        public boolean run(TelemetryPacket packet) {
             while (true) {
                 leftSlide.setPower(1);
                 rightSlide.setPower(1);
@@ -44,21 +42,28 @@ public class AutoTraj extends LinearOpMode {
             }
         }
     }
-
     public Action liftDown() {
         return new LiftDown();
     }
-
     public class ClawClose implements Action {
         @Override
-        public boolean run(@NonNull TelemetryPacket packet) {
+        public boolean run(TelemetryPacket packet) {
             claw.setPosition(0);
             return(true);
         }
     }
-
     public Action ClawClose() {
         return new ClawClose();
+    }
+    public class ClawOpen implements Action {
+        @Override
+        public boolean run(TelemetryPacket packet) {
+            claw.setPosition(1);
+            return(true);
+        }
+    }
+    public Action ClawOpen() {
+        return new ClawOpen();
     }
     public void runOpMode() {
         leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -72,6 +77,6 @@ public class AutoTraj extends LinearOpMode {
 
         if (isStopRequested()) return;
 
-        Actions.runBlocking(Action1);
+        Actions.runBlocking(ClawOpen());
     }
 }

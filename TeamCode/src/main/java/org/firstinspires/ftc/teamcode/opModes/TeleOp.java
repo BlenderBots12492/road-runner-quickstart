@@ -88,17 +88,6 @@ public class TeleOp extends LinearOpMode {
                     leftSlide.setPower(-gamepad2.left_stick_y);
                     rightSlide.setPower(-gamepad2.left_stick_y);
                 }
-                /*
-                if (gamepad2.left_stick_y == 0) {
-                    leftSlide.setPower(0.06);
-                    rightSlide.setPower(0.06);
-                } else if (Math.cos(slideRotator.getCurrentPosition()/(18.9))*leftSlide.getCurrentPosition() < 100) { //1700:90
-                    leftSlide.setPower(-gamepad2.left_stick_y);
-                    rightSlide.setPower(-gamepad2.left_stick_y);
-                } else if (-gamepad2.left_stick_y < 0) {
-                    leftSlide.setPower(-gamepad2.left_stick_y);
-                    rightSlide.setPower(-gamepad2.left_stick_y);
-                }*/
                     //slides rotate
                     if (gamepad2.right_stick_y == 0) {
                         slideRotator.setPower(0);
