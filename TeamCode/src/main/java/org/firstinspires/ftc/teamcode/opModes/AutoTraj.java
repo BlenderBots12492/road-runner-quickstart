@@ -30,7 +30,7 @@ public class AutoTraj extends LinearOpMode {
 
     public class LiftDown implements Action {
         @Override
-        public boolean run(TelemetryPacket packet) {
+        public boolean run(@NonNull TelemetryPacket packet) {
             while (true) {
                 leftSlide.setPower(1);
                 rightSlide.setPower(1);
@@ -47,7 +47,7 @@ public class AutoTraj extends LinearOpMode {
     }
     public class ClawClose implements Action {
         @Override
-        public boolean run(TelemetryPacket packet) {
+        public boolean run(@NonNull TelemetryPacket packet) {
             claw.setPosition(0);
             return(true);
         }
@@ -57,7 +57,7 @@ public class AutoTraj extends LinearOpMode {
     }
     public class ClawOpen implements Action {
         @Override
-        public boolean run(TelemetryPacket packet) {
+        public boolean run(@NonNull TelemetryPacket packet) {
             claw.setPosition(1);
             return(true);
         }
@@ -66,8 +66,8 @@ public class AutoTraj extends LinearOpMode {
         return new ClawOpen();
     }
     public void runOpMode() {
-        leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         TrajectoryActionBuilder tab1 = drive.actionBuilder(initialPose)
                 .splineTo(new Vector2d(38, 38), Math.toRadians(270))
                 .splineTo(new Vector2d(60, 61.7), Math.toRadians(45))
@@ -77,6 +77,6 @@ public class AutoTraj extends LinearOpMode {
 
         if (isStopRequested()) return;
 
-        Actions.runBlocking(ClawOpen());
+        Actions.runBlocking(Action1);
     }
 }
