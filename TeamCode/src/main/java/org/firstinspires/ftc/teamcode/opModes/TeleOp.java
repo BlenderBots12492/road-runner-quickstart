@@ -75,7 +75,10 @@ public class TeleOp extends LinearOpMode {
                 //slides extend / retract
                 PositionVelocityPair slideExtVal = slideExtention.getPositionAndVelocity();
                 PositionVelocityPair slideRotVal = slideRotatorEnc1.getPositionAndVelocity();
-                if (gamepad2.left_stick_y == 0) {
+                if (slideExtVal.position*Math.cos(slideRotVal.position*0.0244) > 1300) {
+                    leftSlide.setPower(-1);
+                    rightSlide.setPower(-1);
+                } else if (gamepad2.left_stick_y == 0) {
                     leftSlide.setPower(0.06);
                     rightSlide.setPower(0.06);
                 } else if (slideExtVal.position*Math.cos(slideRotVal.position*0.0244) < 1300) {
@@ -119,7 +122,7 @@ public class TeleOp extends LinearOpMode {
                     }
 
                     if (gamepad2.left_stick_x != 0) {
-                        clawArm.setPosition((gamepad2.left_stick_x) );
+                        clawArm.setPosition((gamepad2.left_stick_x) * 1.5);
                     }
 
                     clawWrist.setPosition(clawWristPos);
@@ -153,7 +156,7 @@ public class TeleOp extends LinearOpMode {
                     telemetry.addLine().addData("SlidePos", slideExtVal.position);
                     telemetry.addLine().addData("SlideAng", slideRotVal.position);
                     telemetry.addLine().addData("SlidePos2", slideExtenderEnc.getCurrentPosition());
-                    telemetry.addLine().addData("SlideAng2", slideRotatorEnc.getCurrentPosition());
+                    telemetry.addLine().addData("SlideAng2", slideRotVal.position*0.0244);
                     telemetry.addLine();
                     telemetry.addLine().addData("test", slideExtVal.position*Math.cos(slideRotVal.position*0.0244));
                     telemetry.addLine().addData("clawPos", clawPos);

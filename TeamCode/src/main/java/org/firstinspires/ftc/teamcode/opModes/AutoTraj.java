@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode.opModes;
+
 import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -10,6 +11,7 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
@@ -17,46 +19,59 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-
 @Autonomous(name = "AutoTraj", group = "Concept")
 public class AutoTraj extends LinearOpMode {
+    private Pose2d initialPose = new Pose2d(38, 61.7, Math.toRadians(270));
 
-    public void runOpMode() {
-        Pose2d initialPose = new Pose2d(11.8, 61.7, Math.toRadians(90));
-        MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
-        int heading = 180;
-        int x1 = 0;
-        int y1 = 10;
-        int x2 = 10;
-        int y2 = 10;
-        Action tab1 = drive.actionBuilder(initialPose)
-                .splineTo(new Vector2d(x1, y1), heading)
-                .waitSeconds(1)
-                .splineTo(new Vector2d(x2, y2), heading)
-                .build();
+    private MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
+    private DcMotor leftSlide = hardwareMap.get(DcMotor.class, "leftSlide");
+    private DcMotor rightSlide = hardwareMap.get(DcMotor.class, "rightSlide");
+    private Servo claw = hardwareMap.get(Servo.class, "claw");
 
-        // actions that need to happen on init; for instance, a claw tightening.
+    public class LiftDown implements Action {
+        private boolean initialized = false;
 
-        while (!isStopRequested() && !opModeIsActive()) {
-            int position = 1;
-            telemetry.addData("Position during Init", position);
-            telemetry.update();
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            while (true) {
+                leftSlide.setPower(1);
+                rightSlide.setPower(1);
+                if (leftSlide.getCurrentPosition() >= 10000) {
+                    leftSlide.setPower(0);
+                    rightSlide.setPower(0);
+                    return(true);
+                }
+            }
         }
+    }
 
-        int startPosition = 1;
-        telemetry.addData("Starting Position", startPosition);
-        telemetry.update();
-        waitForStart();
+    public Action liftDown() {
+        return new LiftDown();
+    }
+
+    public class ClawClose implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            claw.setPosition(0);
+            return(true);
+        }
+    }
+
+    public Action ClawClose() {
+        return new ClawClose();
+    }
+    public void runOpMode() {
+        leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        TrajectoryActionBuilder tab1 = drive.actionBuilder(initialPose)
+                .splineTo(new Vector2d(38, 38), Math.toRadians(270))
+                .splineTo(new Vector2d(60, 61.7), Math.toRadians(45))
+                .waitSeconds(1);
+
+        Action Action1 = tab1.build();
 
         if (isStopRequested()) return;
 
-        Action trajectoryActionChosen;
-        trajectoryActionChosen = tab1;
-
-        Actions.runBlocking(
-                new SequentialAction(
-                        trajectoryActionChosen
-                )
-        );
+        Actions.runBlocking(Action1);
     }
 }
