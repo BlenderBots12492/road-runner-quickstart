@@ -26,48 +26,58 @@ public class AutoTraj extends LinearOpMode {
     private MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
     private DcMotor leftSlide = hardwareMap.get(DcMotor.class, "leftSlide");
     private DcMotor rightSlide = hardwareMap.get(DcMotor.class, "rightSlide");
+    private DcMotor slideRotator = hardwareMap.get(DcMotor.class, "slideRotator");
     private Servo claw = hardwareMap.get(Servo.class, "claw");
-
-    public class LiftDown implements Action {
+    private Servo clawArm = hardwareMap.get(Servo.class, "clawArm");
+    public class Intake implements Action {
         @Override
-        public boolean run(@NonNull TelemetryPacket packet) {
-            while (true) {
-                leftSlide.setPower(1);
-                rightSlide.setPower(1);
-                if (leftSlide.getCurrentPosition() >= 10000) {
-                    leftSlide.setPower(0);
-                    rightSlide.setPower(0);
-                    return(true);
+        public boolean slide(double pos) {
+            if (leftSlide.getCurrentPosition < distance) {
+                while (true) {
+                    leftSlide.setPower(1);
+                    rightSlide.setPower(1);
+                    if (leftSlide.getCurrentPosition() >= distance) {
+                        leftSlide.setPower(0);
+                        rightSlide.setPower(0);
+                        return (true);
+                    }
                 }
+            } else if (leftSlide.getCurrentPosition > distance) {
+                while (true) {
+                    leftSlide.setPower(1);
+                    rightSlide.setPower(1);
+                    if (leftSlide.getCurrentPosition() >= distance) {
+                        leftSlide.setPower(0);
+                        rightSlide.setPower(0);
+                        return (true);
+                    }
+                }
+            } else {
+                return(true);
             }
         }
-    }
-    public Action liftDown() {
-        return new LiftDown();
-    }
-    public class ClawClose implements Action {
         @Override
-        public boolean run(@NonNull TelemetryPacket packet) {
-            claw.setPosition(0);
+        public boolean claw(boolean open) {
+            if (open) { claw.setPosition(1); }
+            else if (!open) { claw.setPosition(0); }
             return(true);
         }
-    }
-    public Action ClawClose() {
-        return new ClawClose();
-    }
-    public class ClawOpen implements Action {
         @Override
-        public boolean run(@NonNull TelemetryPacket packet) {
-            claw.setPosition(1);
+        public boolean clawArm(double pos) {
+            clawArm.setPosition(pos);
             return(true);
         }
+        public boolean rotateSlide(double ang) {
+            slideRotator.setTargetPosition(ang*0.0244);
+        }
     }
-    public Action ClawOpen() {
-        return new ClawOpen();
+    public Action Intake() {
+        return new Intake();
     }
     public void runOpMode() {
         leftSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        slideRotator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         TrajectoryActionBuilder tab1 = drive.actionBuilder(initialPose)
                 .splineTo(new Vector2d(38, 38), Math.toRadians(270))
                 .splineTo(new Vector2d(60, 61.7), Math.toRadians(45))
@@ -78,5 +88,6 @@ public class AutoTraj extends LinearOpMode {
         if (isStopRequested()) return;
 
         Actions.runBlocking(Action1);
+
     }
 }
