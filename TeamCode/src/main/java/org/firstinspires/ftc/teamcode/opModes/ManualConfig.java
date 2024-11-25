@@ -10,14 +10,14 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name="ManualConfig")
+@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name="AutoConfig")
 public class ManualConfig extends LinearOpMode {
     private DcMotor rightSlide;
     private DcMotor leftSlide;
     private DcMotor slideRotator;
     private DcMotor slideExtenderEnc;
     private DcMotor slideRotatorEnc;
+    private DcMotor LimitSwitch;
     @Override
     public void runOpMode() {
 
@@ -26,6 +26,7 @@ public class ManualConfig extends LinearOpMode {
         slideRotator = hardwareMap.get(DcMotor.class, "slideRotator");
 
         slideExtenderEnc = hardwareMap.get(DcMotor.class, "leftSlide");
+        LimitSwitch = hardwareMap.get(DcMotor.class, "touchSwitch");
         slideRotatorEnc = hardwareMap.get(DcMotor.class, "slideRotator");
 
         slideRotator.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -36,26 +37,17 @@ public class ManualConfig extends LinearOpMode {
 
         if (opModeIsActive()) {
             // Put run blocks here.
-            while (opModeIsActive()) {
+            while (LimitSwitch.getCurrentPosition() == 0) {
                 //slides extend / retract
-                if (gamepad2.left_stick_y == 0) {
-                    leftSlide.setPower(0.06);
-                    rightSlide.setPower(0.06);
-                } else {
-                    leftSlide.setPower(-gamepad2.left_stick_y);
-                    rightSlide.setPower(-gamepad2.left_stick_y);
-                }
-                //slides rotate
-                if (gamepad2.right_stick_y == 0) {
-                    slideRotator.setPower(0);
-                } else {
-                    slideRotator.setPower(-gamepad2.right_stick_y);
-                }
-                if (gamepad2.a) {
-                    slideRotatorEnc.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    slideExtenderEnc.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                }
+                slideRotator.setPower(-0.5);
             }
+            slideRotatorEnc.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            slideExtenderEnc.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            slideRotatorEnc.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            slideRotator.setTargetPosition((int) Math.round(45*0.0244));
+
+
         }
     }
 }
