@@ -39,7 +39,7 @@ public class ManualConfig extends LinearOpMode {
             // Put run blocks here.
             while (LimitSwitch.getCurrentPosition() == 0) {
                 //slides extend / retract
-                slideRotator.setPower(-0.5);
+                slideRotator.setPower(0.5);
             }
             slideRotatorEnc.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             slideExtenderEnc.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
