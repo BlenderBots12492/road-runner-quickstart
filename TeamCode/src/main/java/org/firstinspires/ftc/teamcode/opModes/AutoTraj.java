@@ -22,72 +22,85 @@ import com.qualcomm.robotcore.hardware.Servo;
 @Autonomous(name = "AutoTraj", group = "Concept")
 public class AutoTraj extends LinearOpMode {
     private Pose2d initialPose = new Pose2d(38, 61.7, Math.toRadians(270));
-
-    private MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
-    private DcMotor leftSlide = hardwareMap.get(DcMotor.class, "leftSlide");
-    private DcMotor rightSlide = hardwareMap.get(DcMotor.class, "rightSlide");
-    private DcMotor slideRotator = hardwareMap.get(DcMotor.class, "slideRotator");
-    private Servo claw = hardwareMap.get(Servo.class, "claw");
-    private Servo clawArm = hardwareMap.get(Servo.class, "clawArm");
-    public class Intake implements Action {
-        @Override
-        public boolean slide(double pos) {
-            if (leftSlide.getCurrentPosition < distance) {
+    private MecanumDrive drive;
+    private static DcMotor leftSlide;
+    private static DcMotor rightSlide;
+    private static DcMotor slideRotator;
+    private static Servo claw;
+    private static Servo clawArm;
+    public static class Intake {
+        public static void slide(double pos) {
+            if (leftSlide.getCurrentPosition() < pos) {
                 while (true) {
                     leftSlide.setPower(1);
                     rightSlide.setPower(1);
-                    if (leftSlide.getCurrentPosition() >= distance) {
+                    if (leftSlide.getCurrentPosition() >= pos) {
                         leftSlide.setPower(0);
                         rightSlide.setPower(0);
-                        return (true);
+                        return;
                     }
                 }
-            } else if (leftSlide.getCurrentPosition > distance) {
+            } else if (leftSlide.getCurrentPosition() > pos) {
                 while (true) {
                     leftSlide.setPower(1);
                     rightSlide.setPower(1);
-                    if (leftSlide.getCurrentPosition() >= distance) {
+                    if (leftSlide.getCurrentPosition() >= pos) {
                         leftSlide.setPower(0);
                         rightSlide.setPower(0);
-                        return (true);
+                        return;
                     }
                 }
             } else {
-                return(true);
             }
         }
-        @Override
-        public boolean claw(boolean open) {
+        public static void claw(boolean open) {
             if (open) { claw.setPosition(1); }
             else if (!open) { claw.setPosition(0); }
-            return(true);
         }
-        @Override
-        public boolean clawArm(double pos) {
+        public static void clawArm(double pos) {
             clawArm.setPosition(pos);
-            return(true);
         }
-        public boolean rotateSlide(double ang) {
-            slideRotator.setTargetPosition(ang*0.0244);
+        public static void rotateSlide(double ang) {
+            if (ang*0.0244 < slideRotator.getCurrentPosition()) {
+                while (true) {
+                    slideRotator.setPower(0.5);
+                    if (ang*0.0244 >= slideRotator.getCurrentPosition()) { return; }
+                }
+            } else if (ang*0.0244 > slideRotator.getCurrentPosition()) {
+                while (true) {
+                    slideRotator.setPower(-0.5);
+                    if (ang * 0.0244 <= slideRotator.getCurrentPosition()) {
+                        return;
+                    }
+                }
+            }
         }
-    }
-    public Action Intake() {
-        return new Intake();
     }
     public void runOpMode() {
+        drive = new MecanumDrive(hardwareMap, initialPose);
+        leftSlide = hardwareMap.get(DcMotor.class, "leftSlide");
+        rightSlide = hardwareMap.get(DcMotor.class, "rightSlide");
+        slideRotator = hardwareMap.get(DcMotor.class, "slideRotator");
+        claw = hardwareMap.get(Servo.class, "claw");
+        clawArm = hardwareMap.get(Servo.class, "clawArm");
         leftSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        slideRotator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        slideRotator.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         TrajectoryActionBuilder tab1 = drive.actionBuilder(initialPose)
                 .splineTo(new Vector2d(38, 38), Math.toRadians(270))
-                .splineTo(new Vector2d(60, 61.7), Math.toRadians(45))
+                .splineTo(new Vector2d(47, 47), Math.toRadians(45))
                 .waitSeconds(1);
 
         Action Action1 = tab1.build();
-
+        waitForStart();
         if (isStopRequested()) return;
-
         Actions.runBlocking(Action1);
-
+        if (isStopRequested()) return;
+        Intake.rotateSlide(60);//TODO: DOES NOT WORK!!
+        if (isStopRequested()) return;
+        Intake.slide(1000);
+        if (isStopRequested()) return;
+        Intake.claw(true);
     }
 }

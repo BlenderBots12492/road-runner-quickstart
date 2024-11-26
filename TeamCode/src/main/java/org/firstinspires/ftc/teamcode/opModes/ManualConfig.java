@@ -18,6 +18,7 @@ public class ManualConfig extends LinearOpMode {
     private DcMotor slideExtenderEnc;
     private DcMotor slideRotatorEnc;
     private DcMotor LimitSwitch;
+    private Servo clawArm;
     @Override
     public void runOpMode() {
 
@@ -26,28 +27,38 @@ public class ManualConfig extends LinearOpMode {
         slideRotator = hardwareMap.get(DcMotor.class, "slideRotator");
 
         slideExtenderEnc = hardwareMap.get(DcMotor.class, "leftSlide");
-        LimitSwitch = hardwareMap.get(DcMotor.class, "touchSwitch");
+        LimitSwitch = hardwareMap.get(DcMotor.class, "rightSlide");
         slideRotatorEnc = hardwareMap.get(DcMotor.class, "slideRotator");
+
+        clawArm = hardwareMap.get(Servo.class, "clawArm");
 
         slideRotator.setDirection(DcMotorSimple.Direction.REVERSE);
         slideRotatorEnc.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         slideExtenderEnc.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         waitForStart();
+        clawArm.setPosition(0);
+        // Put run blocks here.
+        slideRotator.setPower(-0.5);
+        sleep(100);
+        telemetry.addLine().addData("Switch", LimitSwitch.getCurrentPosition());
+        telemetry.update();
+        LimitSwitch.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        while (LimitSwitch.getCurrentPosition() == 0 && opModeIsActive()) {
+            //slides extend / retract
+            clawArm.setPosition(0);
+            slideRotator.setPower(0.5);
 
-        if (opModeIsActive()) {
-            // Put run blocks here.
-            while (LimitSwitch.getCurrentPosition() == 0) {
-                //slides extend / retract
-                slideRotator.setPower(0.5);
-            }
-            slideRotatorEnc.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            slideExtenderEnc.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            slideRotatorEnc.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            slideRotator.setTargetPosition((int) Math.round(45*0.0244));
-
+            telemetry.addLine().addData("Switch", LimitSwitch.getCurrentPosition());
+            telemetry.update();
 
         }
+        slideRotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        slideExtenderEnc.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        slideRotator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        telemetry.addLine().addData("test", slideRotator.getCurrentPosition());
+        telemetry.update();
+
     }
 }
