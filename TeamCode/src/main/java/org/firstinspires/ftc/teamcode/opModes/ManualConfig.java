@@ -46,8 +46,8 @@ public class ManualConfig extends LinearOpMode {
         LimitSwitch.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         while (LimitSwitch.getCurrentPosition() == 0 && opModeIsActive()) {
             //slides extend / retract
-            clawArm.setPosition(0);
-            slideRotator.setPower(0.5);
+            clawArm.setPosition(0.7);
+            slideRotator.setPower(0.7);
 
             telemetry.addLine().addData("Switch", LimitSwitch.getCurrentPosition());
             telemetry.update();
@@ -55,7 +55,6 @@ public class ManualConfig extends LinearOpMode {
         }
         slideRotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         slideExtenderEnc.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        slideRotator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         telemetry.addLine().addData("test", slideRotator.getCurrentPosition());
         telemetry.update();

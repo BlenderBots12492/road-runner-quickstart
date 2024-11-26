@@ -61,15 +61,15 @@ public class AutoTraj extends LinearOpMode {
             clawArm.setPosition(pos);
         }
         public static void rotateSlide(double ang) {
-            if (ang*0.0244 < slideRotator.getCurrentPosition()) {
-                while (true) {
-                    slideRotator.setPower(0.5);
-                    if (ang*0.0244 >= slideRotator.getCurrentPosition()) { return; }
-                }
-            } else if (ang*0.0244 > slideRotator.getCurrentPosition()) {
+            if (ang/0.0244 < slideRotator.getCurrentPosition()) {
                 while (true) {
                     slideRotator.setPower(-0.5);
-                    if (ang * 0.0244 <= slideRotator.getCurrentPosition()) {
+                    if (ang/0.0244 >= slideRotator.getCurrentPosition()) { return; }
+                }
+            } else if (ang/0.0244 > slideRotator.getCurrentPosition()) {
+                while (true) {
+                    slideRotator.setPower(0.5);
+                    if (ang/0.0244 <= slideRotator.getCurrentPosition()) {
                         return;
                     }
                 }
@@ -97,7 +97,11 @@ public class AutoTraj extends LinearOpMode {
         if (isStopRequested()) return;
         Actions.runBlocking(Action1);
         if (isStopRequested()) return;
+        telemetry.addLine().addData("SlideAng", slideRotator.getCurrentPosition());
+        telemetry.update();
         Intake.rotateSlide(60);//TODO: DOES NOT WORK!!
+        telemetry.addLine().addData("SlideAng", slideRotator.getCurrentPosition());
+        telemetry.update();
         if (isStopRequested()) return;
         Intake.slide(1000);
         if (isStopRequested()) return;
