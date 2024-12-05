@@ -83,18 +83,21 @@ public class TeleOp extends LinearOpMode {
                     slidesDown = false;
                 }*/
                 //slides extend / retract
-                PositionVelocityPair slideExtVal = slideExtention.getPositionAndVelocity();
-                PositionVelocityPair slideRotVal = slideRotatorEnc1.getPositionAndVelocity();
-                if (slideExtVal.position * Math.cos(slideRotVal.position * 0.0244) * -1 > 1300) {
-                    leftSlide.setPower(-1);
-                    rightSlide.setPower(-1);
-                } else if (gamepad2.left_stick_y == 0) {
+                //PositionVelocityPair slideExtVal = slideExtention.getPositionAndVelocity();
+                //PositionVelocityPair slideRotVal = slideRotatorEnc1.getPositionAndVelocity();
+                //if (slideExtVal.position * Math.cos(slideRotVal.position * 0.0244) * -1 > 1300) {
+                //    leftSlide.setPower(-1);
+                //    rightSlide.setPower(-1);
+                /*} else*/ if (gamepad2.left_stick_y == 0) {
                     leftSlide.setPower(0.06);
                     rightSlide.setPower(0.06);
-                } else if (slideExtVal.position * Math.cos(slideRotVal.position * 0.0244) * -1 < 1300) {
+                } /*else if (slideExtVal.position * Math.cos(slideRotVal.position * 0.0244) * -1 < 1300) {
                     leftSlide.setPower(-gamepad2.left_stick_y);
                     rightSlide.setPower(-gamepad2.left_stick_y);
-                } else if (gamepad2.left_stick_y > 0) {
+                }*/ else if (gamepad2.left_stick_y > 0) {
+                    leftSlide.setPower(-gamepad2.left_stick_y);
+                    rightSlide.setPower(-gamepad2.left_stick_y);
+                } else {
                     leftSlide.setPower(-gamepad2.left_stick_y);
                     rightSlide.setPower(-gamepad2.left_stick_y);
                 }
@@ -103,10 +106,10 @@ public class TeleOp extends LinearOpMode {
                     slideRotator.setPower(0);
                 } else {
                     slideRotator.setPower(-gamepad2.right_stick_y);
-                    if (slideExtVal.position * Math.cos(slideRotVal.position * 0.0244) * -1 > 1300) {
-                        leftSlide.setPower(-1);
-                        rightSlide.setPower(-1);
-                    }
+                    //if (slideExtVal.position * Math.cos(slideRotVal.position * 0.0244) * -1 > 1300) {
+                    //    leftSlide.setPower(-1);
+                    //    rightSlide.setPower(-1);
+                    //}
                 }
 
 
@@ -125,10 +128,10 @@ public class TeleOp extends LinearOpMode {
                         clawArm.setPosition((gamepad2.left_stick_x) * 1.5);
                     }*/
                 if (gamepad2.left_stick_x < -0.9 && clawWristPos > 0) {
-                    clawArmPos -= 0.01;
+                    clawArmPos -= 0.0025;
                 }
                 if (gamepad2.left_stick_x > 0.9 && clawWristPos < 1) {
-                    clawArmPos += 0.01;
+                    clawArmPos += 0.0025;
                 }
                 clawArm.setPosition(clawArmPos);
 
@@ -159,9 +162,9 @@ public class TeleOp extends LinearOpMode {
                 leftFront.setPower(gamepad1_leftstick_y - gamepad1_leftstick_x + gamepad1_rightstick_x);
                 leftBack.setPower(gamepad1_leftstick_y + gamepad1_leftstick_x + gamepad1_rightstick_x);
 
-                telemetry.addLine().addData("SlidePosHorizontal", slideExtVal.position * Math.cos(slideRotVal.position * 0.0244) * -1);
-                telemetry.addLine().addData("SlidePos", slideExtVal.position);
-                telemetry.addLine().addData("SlideAng", slideRotVal.position * 0.0244);
+                //telemetry.addLine().addData("SlidePosHorizontal", slideExtVal.position * Math.cos(slideRotVal.position * 0.0244) * -1);
+                //telemetry.addLine().addData("SlidePos", slideExtVal.position);
+                //telemetry.addLine().addData("SlideAng", slideRotVal.position * 0.0244);
 
 
                 telemetry.update();

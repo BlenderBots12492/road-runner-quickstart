@@ -10,15 +10,14 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name="AutoConfig")
+
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name="ManualConfig")
 public class ManualConfig extends LinearOpMode {
     private DcMotor rightSlide;
     private DcMotor leftSlide;
     private DcMotor slideRotator;
     private DcMotor slideExtenderEnc;
     private DcMotor slideRotatorEnc;
-    private DcMotor LimitSwitch;
-    private Servo clawArm;
     @Override
     public void runOpMode() {
 
@@ -27,37 +26,36 @@ public class ManualConfig extends LinearOpMode {
         slideRotator = hardwareMap.get(DcMotor.class, "slideRotator");
 
         slideExtenderEnc = hardwareMap.get(DcMotor.class, "leftSlide");
-        LimitSwitch = hardwareMap.get(DcMotor.class, "rightSlide");
         slideRotatorEnc = hardwareMap.get(DcMotor.class, "slideRotator");
-
-        clawArm = hardwareMap.get(Servo.class, "clawArm");
 
         slideRotator.setDirection(DcMotorSimple.Direction.REVERSE);
         slideRotatorEnc.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         slideExtenderEnc.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         waitForStart();
-        clawArm.setPosition(0);
-        // Put run blocks here.
-        slideRotator.setPower(-0.5);
-        sleep(100);
-        telemetry.addLine().addData("Switch", LimitSwitch.getCurrentPosition());
-        telemetry.update();
-        LimitSwitch.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        while (LimitSwitch.getCurrentPosition() == 0 && opModeIsActive()) {
-            //slides extend / retract
-            clawArm.setPosition(0.7);
-            slideRotator.setPower(0.7);
 
-            telemetry.addLine().addData("Switch", LimitSwitch.getCurrentPosition());
-            telemetry.update();
-
+        if (opModeIsActive()) {
+            // Put run blocks here.
+            while (opModeIsActive()) {
+                //slides extend / retract
+                if (gamepad2.left_stick_y == 0) {
+                    leftSlide.setPower(0.06);
+                    rightSlide.setPower(0.06);
+                } else {
+                    leftSlide.setPower(-gamepad2.left_stick_y);
+                    rightSlide.setPower(-gamepad2.left_stick_y);
+                }
+                //slides rotate
+                if (gamepad2.right_stick_y == 0) {
+                    slideRotator.setPower(0);
+                } else {
+                    slideRotator.setPower(-gamepad2.right_stick_y);
+                }
+                if (gamepad2.a) {
+                    slideRotatorEnc.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    slideExtenderEnc.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                }
+            }
         }
-        slideRotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        slideExtenderEnc.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        telemetry.addLine().addData("test", slideRotator.getCurrentPosition());
-        telemetry.update();
-
     }
 }

@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -28,8 +29,8 @@ public class AutoTraj extends LinearOpMode {
     private static DcMotor slideRotator;
     private static Servo claw;
     private static Servo clawArm;
-    public static class Intake {
-        public static void slide(double pos) {
+    private static ElapsedTime runtime = new ElapsedTime();
+        /*public static void slide(double pos) {
             if (leftSlide.getCurrentPosition() < pos) {
                 while (true) {
                     leftSlide.setPower(1);
@@ -74,21 +75,51 @@ public class AutoTraj extends LinearOpMode {
                     }
                 }
             }
+        }*/
+        public void slide(int ms, int direction) {
+            runtime.reset();
+            double power = 0.06;
+            if (direction == -1){
+                power = 0.0;
+            }
+            leftSlide.setPower(direction);
+            rightSlide.setPower(direction);
+            while (opModeIsActive() &&
+                    runtime.milliseconds() < ms) {
+                sleep(100);
+            }
+            leftSlide.setPower(power);
+            rightSlide.setPower(power);
         }
-    }
+        public void rotateSlide(long milliseconds, int direction) {
+            runtime.reset();
+            slideRotator.setPower(direction);
+            while (opModeIsActive() &&
+                    runtime.milliseconds() < milliseconds) {
+                sleep(100);
+            }
+            slideRotator.setPower(0);
+        }
+        public void claw(boolean open) {
+            if (open) {
+                claw.setPosition(1);
+            } else {
+                claw.setPosition(0);
+            }
+        }
     public void runOpMode() {
         drive = new MecanumDrive(hardwareMap, initialPose);
         leftSlide = hardwareMap.get(DcMotor.class, "leftSlide");
         rightSlide = hardwareMap.get(DcMotor.class, "rightSlide");
         slideRotator = hardwareMap.get(DcMotor.class, "slideRotator");
         claw = hardwareMap.get(Servo.class, "claw");
-        clawArm = hardwareMap.get(Servo.class, "clawArm");
+        clawArm = hardwareMap.get(Servo.class, "clawWrist");
         leftSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         slideRotator.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         TrajectoryActionBuilder tab1 = drive.actionBuilder(initialPose)
-                .splineTo(new Vector2d(38, 38), Math.toRadians(270))
+                .splineTo(new Vector2d(40, 40), Math.toRadians(270))
                 .splineTo(new Vector2d(47, 47), Math.toRadians(45))
                 .waitSeconds(1);
 
@@ -97,14 +128,13 @@ public class AutoTraj extends LinearOpMode {
         if (isStopRequested()) return;
         Actions.runBlocking(Action1);
         if (isStopRequested()) return;
-        telemetry.addLine().addData("SlideAng", slideRotator.getCurrentPosition());
-        telemetry.update();
-        Intake.rotateSlide(60);//TODO: DOES NOT WORK!!
-        telemetry.addLine().addData("SlideAng", slideRotator.getCurrentPosition());
-        telemetry.update();
+        clawArm.setPosition(0);
+        rotateSlide(500, 1);//TODO: DOES NOT WORK!!
         if (isStopRequested()) return;
-        Intake.slide(1000);
+        slide(1500, 1);
         if (isStopRequested()) return;
-        Intake.claw(true);
+        clawArm.setPosition(0.5);
+        claw(true);
+        sleep(1000);
     }
 }
