@@ -124,6 +124,18 @@ public class AutoTraj extends LinearOpMode {
                 .waitSeconds(1);
 
         Action Action1 = tab1.build();
+
+        TrajectoryActionBuilder goToBasketTab = drive.actionBuilder(initialPose)
+                .splineTo(new Vector2d(47, 47), Math.toRadians(45))
+                .waitSeconds(1);
+
+        Action goToBasket = goToBasketTab.build();
+
+        TrajectoryActionBuilder tab2 = drive.actionBuilder(initialPose)
+                .splineTo(new Vector2d(48, 36), Math.toRadians(270))
+                .waitSeconds(1);
+
+        Action Action2 = tab2.build();
         waitForStart();
         if (isStopRequested()) return;
         Actions.runBlocking(Action1);
@@ -136,5 +148,14 @@ public class AutoTraj extends LinearOpMode {
         clawArm.setPosition(0.5);
         claw(true);
         sleep(1000);
+
+
+
+        slide(1500, -1);
+        Actions.runBlocking(Action2);
+        rotateSlide(1000, -1);
+        claw(false);
+        rotateSlide(1000, 1);
+
     }
 }

@@ -30,6 +30,14 @@ public class TeleOp extends LinearOpMode {
     private double gamepad1_rightstick_y;
     private DcMotor slideExtenderEnc;
     private DcMotor slideRotatorEnc;
+    private PositionVelocityPair slideExtVal;
+    private PositionVelocityPair slideRotVal;
+    public double getSlideAngle() {
+        return(slideRotVal.position * 0.0244);
+    }
+    public double getHorizontalExtention() {
+        return(slideExtVal.position * Math.cos(getSlideAngle()) * -1);
+    }
 
     @Override
     public void runOpMode() {
@@ -83,18 +91,18 @@ public class TeleOp extends LinearOpMode {
                     slidesDown = false;
                 }*/
                 //slides extend / retract
-                //PositionVelocityPair slideExtVal = slideExtention.getPositionAndVelocity();
-                //PositionVelocityPair slideRotVal = slideRotatorEnc1.getPositionAndVelocity();
-                //if (slideExtVal.position * Math.cos(slideRotVal.position * 0.0244) * -1 > 1300) {
-                //    leftSlide.setPower(-1);
-                //    rightSlide.setPower(-1);
-                /*} else*/ if (gamepad2.left_stick_y == 0) {
+                slideExtVal = slideExtention.getPositionAndVelocity();
+                slideRotVal = slideRotatorEnc1.getPositionAndVelocity();
+                if (getHorizontalExtention() > 1300) {
+                    leftSlide.setPower(-1);
+                    rightSlide.setPower(-1);
+                } else if (gamepad2.left_stick_y == 0) {
                     leftSlide.setPower(0.06);
                     rightSlide.setPower(0.06);
-                } /*else if (slideExtVal.position * Math.cos(slideRotVal.position * 0.0244) * -1 < 1300) {
+                } else if (getHorizontalExtention() < 1300) {
                     leftSlide.setPower(-gamepad2.left_stick_y);
                     rightSlide.setPower(-gamepad2.left_stick_y);
-                }*/ else if (gamepad2.left_stick_y > 0) {
+                } else if (gamepad2.left_stick_y > 0) {
                     leftSlide.setPower(-gamepad2.left_stick_y);
                     rightSlide.setPower(-gamepad2.left_stick_y);
                 } else {
@@ -106,10 +114,10 @@ public class TeleOp extends LinearOpMode {
                     slideRotator.setPower(0);
                 } else {
                     slideRotator.setPower(-gamepad2.right_stick_y);
-                    //if (slideExtVal.position * Math.cos(slideRotVal.position * 0.0244) * -1 > 1300) {
-                    //    leftSlide.setPower(-1);
-                    //    rightSlide.setPower(-1);
-                    //}
+                    if (getHorizontalExtention() > 1300) {
+                        leftSlide.setPower(-1);
+                       rightSlide.setPower(-1);
+                    }
                 }
 
 
@@ -162,9 +170,9 @@ public class TeleOp extends LinearOpMode {
                 leftFront.setPower(gamepad1_leftstick_y - gamepad1_leftstick_x + gamepad1_rightstick_x);
                 leftBack.setPower(gamepad1_leftstick_y + gamepad1_leftstick_x + gamepad1_rightstick_x);
 
-                //telemetry.addLine().addData("SlidePosHorizontal", slideExtVal.position * Math.cos(slideRotVal.position * 0.0244) * -1);
-                //telemetry.addLine().addData("SlidePos", slideExtVal.position);
-                //telemetry.addLine().addData("SlideAng", slideRotVal.position * 0.0244);
+                telemetry.addLine().addData("SlidePosHorizontal", getHorizontalExtention());
+                telemetry.addLine().addData("SlidePos", slideExtVal.position);
+                telemetry.addLine().addData("SlideAng", getSlideAngle());
 
 
                 telemetry.update();
