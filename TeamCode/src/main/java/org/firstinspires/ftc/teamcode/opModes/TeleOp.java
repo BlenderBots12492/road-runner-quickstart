@@ -36,7 +36,7 @@ public class TeleOp extends LinearOpMode {
         return(slideRotVal.position * 0.0244);
     }
     public double getHorizontalExtention() {
-        return(slideExtVal.position * Math.cos(getSlideAngle()) * -1);
+        return(slideExtVal.position * Math.cos(Math.toRadians(getSlideAngle())) * -1);
     }
 
     @Override
@@ -93,13 +93,13 @@ public class TeleOp extends LinearOpMode {
                 //slides extend / retract
                 slideExtVal = slideExtention.getPositionAndVelocity();
                 slideRotVal = slideRotatorEnc1.getPositionAndVelocity();
-                if (getHorizontalExtention() > 1300) {
+                if (getHorizontalExtention() > 1200) {
                     leftSlide.setPower(-1);
                     rightSlide.setPower(-1);
                 } else if (gamepad2.left_stick_y == 0) {
                     leftSlide.setPower(0.06);
                     rightSlide.setPower(0.06);
-                } else if (getHorizontalExtention() < 1300) {
+                } else if (getHorizontalExtention() < 1200) {
                     leftSlide.setPower(-gamepad2.left_stick_y);
                     rightSlide.setPower(-gamepad2.left_stick_y);
                 } else if (gamepad2.left_stick_y > 0) {
@@ -114,7 +114,7 @@ public class TeleOp extends LinearOpMode {
                     slideRotator.setPower(0);
                 } else {
                     slideRotator.setPower(-gamepad2.right_stick_y);
-                    if (getHorizontalExtention() > 1300) {
+                    if (getHorizontalExtention() > 1200) {
                         leftSlide.setPower(-1);
                        rightSlide.setPower(-1);
                     }
