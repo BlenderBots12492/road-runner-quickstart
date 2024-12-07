@@ -7,6 +7,9 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+//import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.TrajectoryBuilder;
+
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -108,6 +111,8 @@ public class AutoTraj extends LinearOpMode {
                 claw.setPosition(0);
             }
         }
+
+
     public void runOpMode() {
         drive = new MecanumDrive(hardwareMap, initialPose);
         leftSlide = hardwareMap.get(DcMotor.class, "leftSlide");
@@ -119,12 +124,21 @@ public class AutoTraj extends LinearOpMode {
         leftSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         slideRotator.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        TrajectoryBuilder test1;
+
 
         TrajectoryActionBuilder tab1 = drive.actionBuilder(initialPose)
-                //.splineTo(new Vector2d(40, 50), Math.toRadians(270))
-                .splineTo(new Vector2d(47, 47), Math.toRadians(45))
-                .waitSeconds(1);
+                .lineToY(38)
+                .turnTo(Math.toRadians(45))
+                .lineToY(48);
         Action Action1 = tab1.build();
+        TrajectoryActionBuilder tab3 = drive.actionBuilder(initialPose)
+                .lineToY(38)
+                .turnTo(Math.toRadians(270))
+                .lineToY(0)
+                .turnTo(0)
+                .lineToX(24);
+        Action TouchBottom = tab3.build();
 
         TrajectoryActionBuilder tab2 = drive.actionBuilder(new Pose2d(new Vector2d(47, 47), Math.toRadians(45)))
                 .splineTo(new Vector2d(47, 40), Math.toRadians(270))
@@ -135,21 +149,26 @@ public class AutoTraj extends LinearOpMode {
         waitForStart();
         if (isStopRequested()) return;
         Actions.runBlocking(Action1);
+
         if (isStopRequested()) return;
         clawArm.setPosition(0);
         sleep(100);
-        rotateSlide(500, 1);//TODO: DOES NOT WORK!!
+        rotateSlide(500, 1);
         if (isStopRequested()) return;
-        slide(1500, 1);
+        slide(1200, 1);
         if (isStopRequested()) return;
         clawArm.setPosition(0.5);
         claw(true);
         sleep(1000);
+        slide(1200, -1);
+        rotateSlide(300, -1);
+        if (isStopRequested()) return;
+        Actions.runBlocking(TouchBottom);//TODO: Make separate Trajectories
+        if (isStopRequested()) return;
+        slide(100, 1);
 
-
-
-        slide(1500, -1);
-        Actions.runBlocking(Action2);
+        /*
+        //Actions.runBlocking(Action2);
         sleep(500);
         clawArm.setPosition(0.7);
         clawWrist.setPosition(0.75);
@@ -157,6 +176,6 @@ public class AutoTraj extends LinearOpMode {
         claw(false);
         sleep(500);
         rotateSlide(1000, 1);
-
+        */
     }
 }
