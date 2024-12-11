@@ -19,7 +19,7 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.teamcode.Drawing;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
-@Autonomous(name = "AutonomousClip", group = "Concept")
+@Autonomous(name = "AutonomousClip_IGNORE", group = "Concept")
 public class AutoClip extends LinearOpMode {
     private DcMotor leftBack;
     private DcMotor leftFront;
