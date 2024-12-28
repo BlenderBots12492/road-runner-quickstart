@@ -128,7 +128,7 @@ public class AutoTraj extends LinearOpMode {
                 //.splineTo(new Vector2d(40, 50), Math.toRadians(270))
                 //.splineTo(new Vector2d(47, 47), Math.toRadians(45))
                 .waitSeconds(1)
-                .lineToY(38)
+                .lineToY(39)
                 .turnTo(Math.toRadians(45))
                 .lineToY(49);
         Action Action1 = tab1.build();
@@ -147,17 +147,19 @@ public class AutoTraj extends LinearOpMode {
                 .waitSeconds(1);
         Action Action2 = tab2.build();
         waitForStart();
+        clawArm.setPosition(0);
         if (isStopRequested()) return;
         Actions.runBlocking(Action1);
 
         if (isStopRequested()) return;
-        clawArm.setPosition(0);
         sleep(100);
         rotateSlide(500, 1);//TODO: DOES NOT WORK!!
         if (isStopRequested()) return;
-        slide(1200, 1);
+        slide(1300, 1);
         if (isStopRequested()) return;
         clawArm.setPosition(1);
+        if (isStopRequested()) return;
+        sleep(500);
         if (isStopRequested()) return;
         claw(true);
         if (isStopRequested()) return;
@@ -167,8 +169,8 @@ public class AutoTraj extends LinearOpMode {
         if (isStopRequested()) return;
         sleep(500);
         if (isStopRequested()) return;
-        slide(1200, -1);
-        rotateSlide(300, -1);
+        slide(1300, -1);
+        rotateSlide(320, -1);
         //if (isStopRequested()) return;
         //Actions.runBlocking(TouchBottom);//TODO: Make separate Trajectories
         //if (isStopRequested()) return;

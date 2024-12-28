@@ -110,13 +110,15 @@ public class TeleOp extends LinearOpMode {
                     rightSlide.setPower(-gamepad2.left_stick_y);
                 }
                 //slides rotate
-                if (gamepad2.right_stick_y == 0) {
+                if (getSlideAngle() > 87) {
+                    slideRotator.setPower(1);
+                } else if (gamepad2.right_stick_y == 0) {
                     slideRotator.setPower(0);
                 } else {
                     slideRotator.setPower(-gamepad2.right_stick_y);
-                    if (getHorizontalExtention() > 1200) {
+                    if (getHorizontalExtention() > 1200 || getHorizontalExtention() < -30) {
                         leftSlide.setPower(-1);
-                       rightSlide.setPower(-1);
+                        rightSlide.setPower(-1);
                     }
                 }
 
@@ -173,7 +175,7 @@ public class TeleOp extends LinearOpMode {
                 telemetry.addLine().addData("SlidePosHorizontal", getHorizontalExtention());
                 telemetry.addLine().addData("SlidePos", slideExtVal.position);
                 telemetry.addLine().addData("SlideAng", getSlideAngle());
-
+                telemetry.addLine().addData("clawArm", clawArmPos);
 
                 telemetry.update();
 

@@ -217,11 +217,11 @@ public class AutoClip extends LinearOpMode {
         if (opModeIsActive()) {
             move_forward(100);
             rotateSlideUp(400);
-            clawArm.setPosition(0.6);
-            slide(660, 1);
+            //clawArm.setPosition(0.6);
+            slide(450, 1);
             move_forward(300);
             move_forwardSlow(600);
-            clawArm.setPosition(0.3);
+            //clawArm.setPosition(0.3);
             slidePressure(1000, -1);
             //openClaw();
             slide(100, -1);

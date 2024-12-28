@@ -71,25 +71,26 @@ public class AutomaticClip extends LinearOpMode {
         slideRotator.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         TrajectoryActionBuilder tab1 = drive.actionBuilder(initialPose)
-                .lineToY(35);
+                .lineToY(32);
         Action ToBar = tab1.build();
 
 
 
         waitForStart();
-        clawArm.setPosition(0);
+        //clawArm.setPosition(0.25);
         sleep(100);
         rotateSlide(500, 1);
         if (isStopRequested()) return;
-        slide(300, 1);
+        slide(510, 1);
         if (isStopRequested()) return;
         Actions.runBlocking(ToBar);
         if (isStopRequested()) return;
-        clawArm.setPosition(0.25); //TODO: adjust values for accurate placement
+        rotateSlide(50, -1);
         slide(100, -1);
+        clawArm.setPosition(0.25);
         claw(true);
         sleep(1000);
         slide(200, -1);
-        rotateSlide(300, -1);
+        rotateSlide(450, -1);
     }
 }
