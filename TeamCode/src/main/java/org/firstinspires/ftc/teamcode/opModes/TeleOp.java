@@ -76,6 +76,7 @@ public class TeleOp extends LinearOpMode {
         double clawPos = 0.4;
         double clawWristPos = 0;
         double clawArmPos = 0.47;
+        int counter = 0;
         //boolean slidesDown = false;
 
         if (opModeIsActive()) {
@@ -109,19 +110,30 @@ public class TeleOp extends LinearOpMode {
                     leftSlide.setPower(-gamepad2.left_stick_y);
                     rightSlide.setPower(-gamepad2.left_stick_y);
                 }
+
                 //slides rotate
-                if (getSlideAngle() > 87) {
-                    slideRotator.setPower(1);
-                } else if (gamepad2.right_stick_y == 0) {
-                    slideRotator.setPower(0);
+                if (gamepad2.a) {
+                    counter = 1;
+                }
+                if (1 == counter) {
+                    if (gamepad2.right_stick_y == 0) {
+                        slideRotator.setPower(0);
+                    } else {
+                        slideRotator.setPower(-gamepad2.right_stick_y);
+                    }
                 } else {
-                    slideRotator.setPower(-gamepad2.right_stick_y);
-                    if (getHorizontalExtention() > 1200 || getHorizontalExtention() < -30) {
-                        leftSlide.setPower(-1);
-                        rightSlide.setPower(-1);
+                    if (getSlideAngle() > 87) {
+                        slideRotator.setPower(1);
+                    } else if (gamepad2.right_stick_y == 0) {
+                        slideRotator.setPower(0);
+                    } else {
+                        slideRotator.setPower(-gamepad2.right_stick_y);
+                        if (getHorizontalExtention() > 1200 || getHorizontalExtention() < -30) {
+                            leftSlide.setPower(-1);
+                            rightSlide.setPower(-1);
+                        }
                     }
                 }
-
 
                 //Get Claw Data
                 //if (gamepad2.right_stick_x > 0.1 && clawArmPos < 0.48 ) { clawArmPos += 0.00005; }
