@@ -44,7 +44,7 @@ public class AutomaticClip extends LinearOpMode {
         slideRotator.setPower(direction);
         while (opModeIsActive() &&
                 runtime.milliseconds() < milliseconds) {
-            sleep(100);
+            sleep(10);
         }
         slideRotator.setPower(0);
     }
@@ -70,10 +70,10 @@ public class AutomaticClip extends LinearOpMode {
         slideRotator.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         int back = 0;
         int forward = 55;
-        int sideways = -12;
-        int startPush = -42;
+        int sideways = -10;
+        int startPush = -40;
         TrajectoryActionBuilder tab1 = drive.actionBuilder(initialPose)
-                .lineToY(29);
+                .lineToY(30);
         Action ToBar = tab1.build();
         TrajectoryActionBuilder tab2= drive.actionBuilder(new Pose2d(-6.75, 32, Math.toRadians(270)))
                 .lineToY(40)
@@ -99,7 +99,7 @@ public class AutomaticClip extends LinearOpMode {
         waitForStart();
         clawArm.setPosition(1);
         //sleep(100);
-        rotateSlide(500, 1);
+        rotateSlide(480, 1);
         if (isStopRequested()) return;
         slide(510, 1);
         if (isStopRequested()) return;

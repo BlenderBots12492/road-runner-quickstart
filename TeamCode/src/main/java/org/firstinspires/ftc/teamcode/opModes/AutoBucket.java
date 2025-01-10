@@ -21,8 +21,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import java.lang.Math;
-@Autonomous(name = "AutoTraj", group = "Concept")
-public class AutoTraj extends LinearOpMode {
+@Autonomous(name = "AutoPlasticContainer", group = "Concept")
+public class AutoBucket extends LinearOpMode {
     private Pose2d initialPose = new Pose2d(38, 61.7, Math.toRadians(270));
     private MecanumDrive drive;
     private static DcMotor leftSlide;
@@ -32,75 +32,33 @@ public class AutoTraj extends LinearOpMode {
     private static Servo clawArm;
     private static Servo clawWrist;
     private static ElapsedTime runtime = new ElapsedTime();
-    /*public static void slide(double pos) {
-        if (leftSlide.getCurrentPosition() < pos) {
-            while (true) {
+    public void slide(double distance) {
+        while (opModeIsActive()) {
+            if ((-leftSlide.getCurrentPosition())+10 < distance) {
                 leftSlide.setPower(1);
                 rightSlide.setPower(1);
-                if (leftSlide.getCurrentPosition() >= pos) {
-                    leftSlide.setPower(0);
-                    rightSlide.setPower(0);
-                    return;
-                }
-            }
-        } else if (leftSlide.getCurrentPosition() > pos) {
-            while (true) {
-                leftSlide.setPower(1);
-                rightSlide.setPower(1);
-                if (leftSlide.getCurrentPosition() >= pos) {
-                    leftSlide.setPower(0);
-                    rightSlide.setPower(0);
-                    return;
-                }
-            }
-        } else {
-        }
-    }
-    public static void claw(boolean open) {
-        if (open) { claw.setPosition(1); }
-        else if (!open) { claw.setPosition(0); }
-    }
-    public static void clawArm(double pos) {
-        clawArm.setPosition(pos);
-    }
-    public static void rotateSlide(double ang) {
-        if (ang/0.0244 < slideRotator.getCurrentPosition()) {
-            while (true) {
-                slideRotator.setPower(-0.5);
-                if (ang/0.0244 >= slideRotator.getCurrentPosition()) { return; }
-            }
-        } else if (ang/0.0244 > slideRotator.getCurrentPosition()) {
-            while (true) {
-                slideRotator.setPower(0.5);
-                if (ang/0.0244 <= slideRotator.getCurrentPosition()) {
-                    return;
-                }
+            } else if (leftSlide.getCurrentPosition()-10 > distance) {
+                leftSlide.setPower(-1);
+                rightSlide.setPower(-1);
+            } else {
+                leftSlide.setPower(0);
+                rightSlide.setPower(0);
+                return;
             }
         }
-    }*/
-    public void slide(int ms, int direction) {
-        runtime.reset();
-        double power = 0.06;
-        if (direction == -1){
-            power = 0.0;
-        }
-        leftSlide.setPower(direction);
-        rightSlide.setPower(direction);
-        while (opModeIsActive() &&
-                runtime.milliseconds() < ms) {
-            sleep(100);
-        }
-        leftSlide.setPower(power);
-        rightSlide.setPower(power);
     }
-    public void rotateSlide(long milliseconds, int direction) {
-        runtime.reset();
-        slideRotator.setPower(direction);
-        while (opModeIsActive() &&
-                runtime.milliseconds() < milliseconds) {
-            sleep(10);
+    public void rotateSlide(double angle) {
+        double distance = angle/0.0244;
+        while (opModeIsActive()) {
+            if (slideRotator.getCurrentPosition()+10 < distance) {
+                slideRotator.setPower(1);
+            } else if (slideRotator.getCurrentPosition()-10 > distance) {
+                slideRotator.setPower(-1);
+            } else {
+                slideRotator.setPower(0);
+                return;
+            }
         }
-        slideRotator.setPower(0);
     }
     public void claw(boolean open) {
         if (open) {
@@ -111,9 +69,9 @@ public class AutoTraj extends LinearOpMode {
     }
     private void reachBasket() {
         sleep(100);
-        rotateSlide(300, 1);
+        rotateSlide(60);
         if (isStopRequested()) return;
-        slide(1200, 1);
+        slide(2500);
         if (isStopRequested()) return;
         clawArm.setPosition(1);
         if (isStopRequested()) return;
@@ -127,23 +85,28 @@ public class AutoTraj extends LinearOpMode {
         if (isStopRequested()) return;
         sleep(500);
         if (isStopRequested()) return;
-        rotateSlide(100, 1);
-        slide(1300, -1);
-        rotateSlide(320, -1);
-
+        rotateSlide(65);
+        telemetry.addLine().addData("Slide", leftSlide.getCurrentPosition());
+        telemetry.update();
+        sleep(1000);
+        slide(0);
+        telemetry.addLine().addData("Slide", leftSlide.getCurrentPosition());
+        telemetry.update();
+        sleep(1000);
+        rotateSlide(45);
     }
     private void grabBlock() {
         if (isStopRequested()) return;
         clawArm.setPosition(1);
         sleep(100);
         if (isStopRequested()) return;
-        slide(500, 1);
-        rotateSlide(500, -1);
+        slide(1300);
+        rotateSlide(0);
         sleep(150);
         claw(false);
         sleep(100);
-        slide(500, -1);
-        rotateSlide(700, 1);
+        slide(0);
+        rotateSlide(45);
         sleep(250);
 
     }
@@ -172,7 +135,7 @@ public class AutoTraj extends LinearOpMode {
         Action Action1 = tab1.build();
         TrajectoryActionBuilder tab3 = drive.actionBuilder(initialPose)
                 .lineToY(38);
-                //.turnTo(Math.toRadians(270));
+        //.turnTo(Math.toRadians(270));
         Action TouchBottom1 = tab3.build();
         TrajectoryActionBuilder tab4 = drive.actionBuilder(initialPose)
                 .lineToY(0)
@@ -181,8 +144,8 @@ public class AutoTraj extends LinearOpMode {
         Action TouchBottom2 = tab4.build();
         TrajectoryActionBuilder tab5 = drive.actionBuilder(new Pose2d(49, 49, Math.toRadians(45)))
                 .turnTo(Math.toRadians(264));
-                //.lineToYLinearHeading(60,  Math.toRadians(270));
-                //.lineToXLinearHeading(48,  Math.toRadians(270));
+        //.lineToYLinearHeading(60,  Math.toRadians(270));
+        //.lineToXLinearHeading(48,  Math.toRadians(270));
         Action Toblock1 = tab5.build();
         TrajectoryActionBuilder tab7 = drive.actionBuilder(new Pose2d(49, 49, Math.toRadians(45)))
                 .turnTo(Math.toRadians(280));

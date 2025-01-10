@@ -51,7 +51,7 @@ public class AutoConfig extends LinearOpMode {
         slideRotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         slideExtenderEnc.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        telemetry.addLine().addData("test", slideRotator.getCurrentPosition());
+        telemetry.addLine().addData("test", leftSlide.getCurrentPosition());
         telemetry.update();
 
     }
