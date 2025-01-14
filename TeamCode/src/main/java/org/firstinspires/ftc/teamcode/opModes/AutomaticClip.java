@@ -70,8 +70,8 @@ public class AutomaticClip extends LinearOpMode {
         slideRotator.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         int back = 0;
         int forward = 55;
-        int sideways = -10;
-        int startPush = -40;
+        int sideways = -15;
+        int startPush = -35;
         TrajectoryActionBuilder tab1 = drive.actionBuilder(initialPose)
                 .lineToY(30);
         Action ToBar = tab1.build();
