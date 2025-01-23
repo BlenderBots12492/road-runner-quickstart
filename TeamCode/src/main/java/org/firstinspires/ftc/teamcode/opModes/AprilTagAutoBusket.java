@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode.opModes;
+import android.support.v4.app.INotificationSideChannel;
 import android.util.Size;
 
 import com.acmerobotics.roadrunner.Action;
@@ -124,6 +125,7 @@ public class AprilTagAutoBusket extends LinearOpMode {
                 sideAng = 0;
                 side = 1;
             }
+            drive.pose = new Pose2d(pose.x, pose.y, tag.robotPose.getOrientation().getYaw());
             return(new Pose2d(pose.x, pose.y, tag.robotPose.getOrientation().getYaw()));
         }
         return(drive.pose);
@@ -203,3 +205,7 @@ public class AprilTagAutoBusket extends LinearOpMode {
         reachBasket();
     }
 }
+
+/*while (adrianIsAlive  == true) {
+     worldHunger = notSolved;
+        }*/

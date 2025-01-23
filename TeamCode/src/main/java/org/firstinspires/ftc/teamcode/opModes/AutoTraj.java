@@ -23,7 +23,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import java.lang.Math;
 @Autonomous(name = "AutoTraj", group = "Concept")
 public class AutoTraj extends LinearOpMode {
-    private Pose2d initialPose = new Pose2d(38, 61.7, Math.toRadians(270));
+    private Pose2d initialPose = new Pose2d(38, 60, Math.toRadians(270));
     private MecanumDrive drive;
     private static DcMotor leftSlide;
     private static DcMotor rightSlide;
@@ -167,13 +167,15 @@ public class AutoTraj extends LinearOpMode {
                 //.splineTo(new Vector2d(47, 47), Math.toRadians(45))
                 .waitSeconds(1)
                 .lineToY(39)
-                .turnTo(Math.toRadians(45))
-                .lineToY(49);
+                .turnTo(Math.toRadians(55)) //TODO: adjust value
+                .strafeTo(new Vector2d(49.5, 49.5));
         Action Action1 = tab1.build();
         TrajectoryActionBuilder tab3 = drive.actionBuilder(initialPose)
-                .lineToY(38);
-                //.turnTo(Math.toRadians(270));
-        Action TouchBottom1 = tab3.build();
+                .strafeTo(new Vector2d(35, 40))
+                .strafeTo(new Vector2d(35, 0))
+                .turnTo(180)
+                .strafeTo(new Vector2d(20, 0));
+        Action ToBar = tab3.build();
         TrajectoryActionBuilder tab4 = drive.actionBuilder(initialPose)
                 .lineToY(0)
                 .turnTo(0)
@@ -214,6 +216,7 @@ public class AutoTraj extends LinearOpMode {
         if (isStopRequested()) return;
         sleep(100);
         reachBasket();
+        /*
         if (isStopRequested()) return;
         Actions.runBlocking(Toblock1);
         grabBlock();
@@ -228,6 +231,11 @@ public class AutoTraj extends LinearOpMode {
         if (isStopRequested()) return;
         Actions.runBlocking(TurnBasket2);
         if (isStopRequested()) return;
-        reachBasket();
+        reachBasket();*/
+        Actions.runBlocking(ToBar);
+        //clawArm.setPosition(0.5);
+        slide(400, 1);
+        clawArm.setPosition(0.4);
+        sleep(400);
     }
 }

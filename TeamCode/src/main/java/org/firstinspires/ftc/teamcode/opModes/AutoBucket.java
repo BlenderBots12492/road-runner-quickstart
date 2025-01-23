@@ -73,6 +73,7 @@ public class AutoBucket extends LinearOpMode {
         if (isStopRequested()) return;
         slide(2500);
         if (isStopRequested()) return;
+        //clawArm.setPosition(1);
         clawArm.setPosition(1);
         if (isStopRequested()) return;
         sleep(500);

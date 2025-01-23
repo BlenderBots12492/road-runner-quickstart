@@ -73,9 +73,9 @@ public class TeleOp extends LinearOpMode {
         Encoder slideRotatorEnc1 = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "slideRotator")));
         Encoder slideExtention = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "leftSlide")));
 
-        double clawPos = 0.4;
-        double clawWristPos = 0;
-        double clawArmPos = 0.47;
+        double clawPos = claw.getPosition();
+        double clawWristPos = clawWrist.getPosition();
+        double clawArmPos = clawArm.getPosition();
         int counter = 0;
         //boolean slidesDown = false;
 
