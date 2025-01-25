@@ -119,6 +119,16 @@ public class AutomaticClip extends LinearOpMode {
         sleep(1000);
         slide(200, -1);
         rotateSlide(450, -1);*/
+        rotateSlide(380, 1);
+        clawArm.setPosition(1);
+        if (isStopRequested()) return;
+        Actions.runBlocking(ToBar);
+        if (isStopRequested()) return;
+        slide(630, 1);
+        claw(true);
+        slide(630, -1);
+        rotateSlide(380, -1);
+
         if (isStopRequested()) return;
         Actions.runBlocking(ToSampleA);
         if (isStopRequested()) return;

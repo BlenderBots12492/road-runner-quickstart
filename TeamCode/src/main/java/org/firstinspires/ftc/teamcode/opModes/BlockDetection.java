@@ -47,7 +47,7 @@ public class BlockDetection extends LinearOpMode
                 //.setTargetColorRange(ColorRange.RED)
                 .setTargetColorRange(ColorRange.RED)
                 .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)    // exclude blobs inside blobs
-                .setRoi(ImageRegion.asUnityCenterCoordinates(-0.9, 0.9, 0.9, -0.9))  // search central 1/4 of camera view
+                .setRoi(ImageRegion.asUnityCenterCoordinates(-0.9, 0.5, 0.9, -1))  // search central 1/4 of camera view
                 .setDrawContours(true)                        // Show contours on the Stream Preview
                 .setBlurSize(5)                               // Smooth the transitions between different colors in image
                 .build();
@@ -80,13 +80,14 @@ public class BlockDetection extends LinearOpMode
                     RotatedRect boxFit = b.getBoxFit();
                 }
                 MoveTo = blobs.get(0).getBoxFit().center;
-                drive.setDrivePowers(new PoseVelocity2d(
+                telemetry.addData("MoveTo", MoveTo);
+                /*drive.setDrivePowers(new PoseVelocity2d(
                         new Vector2d(
-                                -(MoveTo.x-180)/500,
+                                -(MoveTo.y-220)/80,
                                 0
                         ),
-                        -Math.abs(MoveTo.y-90)/(MoveTo.y-90)/10
-                ));
+                        (-Math.abs(MoveTo.x-160)/(MoveTo.x-160))/5
+                ));*/
             } else {
                 drive.setDrivePowers(new PoseVelocity2d(
                         new Vector2d(
