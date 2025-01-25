@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.SortOrder;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -38,7 +39,9 @@ public class BlockDetection extends LinearOpMode
         private double point;
         private double lastError;
         private double integral;
-        public void PID(double Kp, double Ki, double Kd, double setPoint) {
+
+
+        public PID(double Kp, double Ki, double Kd, double setPoint) {
             this.KP = Kp;
             this.KI = Ki;
             this.KD = Kd;
@@ -54,8 +57,93 @@ public class BlockDetection extends LinearOpMode
     }
     private Point MoveTo;
     private MecanumDrive drive;
+    private DcMotor slideRotator;
+    private Servo claw;
     private Pose2d initialPose = new Pose2d(38, 61.7, Math.toRadians(270));
+    private void bend() {
+        double distance = 0;
+        claw.setPosition(1);
+        sleep(300);
+        while (opModeIsActive()) {
+            if (slideRotator.getCurrentPosition() + 10 < distance) {
+                slideRotator.setPower(1);
+            } else if (slideRotator.getCurrentPosition() - 10 > distance) {
+                slideRotator.setPower(-1);
+            } else {
+                slideRotator.setPower(0);
+                claw.setPosition(0);
+                sleep(300);
+                slideRotator.setPower(1);
+                sleep(1000);
+                slideRotator.setPower(0);
+                return;
+            }
+        }
+    }
+    private void grabBlock() {
+        double ForV;
+        double AngV;
+        while (opModeIsActive() || opModeInInit())
+        {
+            telemetry.addData("preview on/off", "... Camera Stream\n");
 
+            // Read the current list
+            List<ColorBlobLocatorProcessor.Blob> blobs = colorLocator.getBlobs();
+
+
+            ColorBlobLocatorProcessor.Util.filterByArea(100, 20000, blobs);  // filter out very small blobs.
+
+            telemetry.addLine(" Area Density Aspect  Center");
+
+            // Display the size (area) and center location for each Blob.
+            if (!blobs.isEmpty()) {
+                for (ColorBlobLocatorProcessor.Blob b : blobs) {
+                    RotatedRect boxFit = b.getBoxFit();
+                }
+                MoveTo = blobs.get(0).getBoxFit().center;
+                AngV = -Math.signum(MoveTo.x-160)/200;
+                AngV = Math.min(AngV*Math.abs(MoveTo.x-160), 0.3);
+                if (Math.abs(MoveTo.x-160) < 10) {
+                    AngV = 0;
+                }
+                //AngV = AngPID.control(MoveTo.x);
+
+                ForV = -(MoveTo.y-220)/120;
+                if (Math.abs(MoveTo.y-220) < 10) {
+                    ForV = 0;
+                }
+                telemetry.addData("MoveTo", MoveTo);
+                telemetry.addData("Ang V", AngV);
+
+                drive.setDrivePowers(new PoseVelocity2d(
+                        new Vector2d(
+                                ForV,
+                                0
+                        ),
+                        AngV
+                ));
+                if (ForV == 0 && AngV == 0) {
+                    bend();
+                    return;
+                }
+            } else {
+                //AngPID = new PID(0.01, 0, 0.01, 160);
+                drive.setDrivePowers(new PoseVelocity2d(
+                        new Vector2d(
+                                0,
+                                0
+                        ),
+                        0
+                ));
+            }
+
+
+
+            telemetry.update();
+            sleep(50);
+        }
+    }
+    private ColorBlobLocatorProcessor colorLocator;
 
     @Override
     public void runOpMode() {
@@ -64,8 +152,10 @@ public class BlockDetection extends LinearOpMode
         DcMotor leftFront = hardwareMap.get(DcMotor.class, "leftFront");
         DcMotor rightFront = hardwareMap.get(DcMotor.class, "rightFront");
         DcMotor rightBack = hardwareMap.get(DcMotor.class, "rightBack");
+        slideRotator = hardwareMap.get(DcMotor.class, "slideRotator");
+        claw = hardwareMap.get(Servo.class, "claw");
 
-        ColorBlobLocatorProcessor colorLocator = new ColorBlobLocatorProcessor.Builder()
+        colorLocator = new ColorBlobLocatorProcessor.Builder()
                 //.setTargetColorRange(ColorRange.BLUE)         // use a predefined color match
                 //.setTargetColorRange(ColorRange.RED)
                 .setTargetColorRange(ColorRange.RED)
@@ -85,59 +175,9 @@ public class BlockDetection extends LinearOpMode
         telemetry.setDisplayFormat(Telemetry.DisplayFormat.MONOSPACE);
         waitForStart();
         double AngV;
-        double ForV;
+        double ForV = 0;
+        //PID AngPID = new PID(0.01, 0, 0.01, 160);
         // WARNING:  To be able to view the stream preview on the Driver Station, this code runs in INIT mode.
-        while (opModeIsActive() || opModeInInit())
-        {
-            telemetry.addData("preview on/off", "... Camera Stream\n");
-
-            // Read the current list
-            List<ColorBlobLocatorProcessor.Blob> blobs = colorLocator.getBlobs();
-
-
-            ColorBlobLocatorProcessor.Util.filterByArea(100, 20000, blobs);  // filter out very small blobs.
-
-            telemetry.addLine(" Area Density Aspect  Center");
-
-            // Display the size (area) and center location for each Blob.
-            if (!blobs.isEmpty()) {
-                for (ColorBlobLocatorProcessor.Blob b : blobs) {
-                    RotatedRect boxFit = b.getBoxFit();
-                }
-                MoveTo = blobs.get(0).getBoxFit().center;
-                /*AngV = -Math.signum(MoveTo.x-160)/200;
-                AngV = Math.min(AngV*Math.abs(MoveTo.x-160), 0.3);
-                if (Math.abs(MoveTo.x-160) < 10) {
-                    AngV = 0;
-                }*/
-                ForV = -(MoveTo.y-210)/80;
-                if (Math.abs(MoveTo.y-210) < 10) {
-                    ForV = 0;
-                }
-                telemetry.addData("MoveTo", MoveTo);
-                telemetry.addData("Ang V", AngV);
-
-                drive.setDrivePowers(new PoseVelocity2d(
-                        new Vector2d(
-                                ForV,
-                                0
-                        ),
-                        AngV
-                ));
-            } else {
-                drive.setDrivePowers(new PoseVelocity2d(
-                        new Vector2d(
-                                0,
-                                0
-                        ),
-                        0
-                ));
-            }
-
-
-
-            telemetry.update();
-            sleep(50);
-        }
+        grabBlock();
     }
 }
