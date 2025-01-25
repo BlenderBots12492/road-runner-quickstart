@@ -24,11 +24,34 @@ import org.opencv.core.RotatedRect;
 
 import java.util.List;
 
+import kotlin.reflect.KParameter;
+
 
 //@Disabled
 @TeleOp(name = "TEST: Block Detect")
 public class BlockDetection extends LinearOpMode
 {
+    class PID {
+        private double KP;
+        private double KI;
+        private double KD;
+        private double point;
+        private double lastError;
+        private double integral;
+        public void PID(double Kp, double Ki, double Kd, double setPoint) {
+            this.KP = Kp;
+            this.KI = Ki;
+            this.KD = Kd;
+            this.point = setPoint;
+        }
+        private double control(double measurement) {
+            double error = point - measurement;
+            double derivative = error - lastError;
+            integral += error;
+            lastError = error;
+            return KP * error + KI * integral + KD * derivative;
+        }
+    }
     private Point MoveTo;
     private MecanumDrive drive;
     private Pose2d initialPose = new Pose2d(38, 61.7, Math.toRadians(270));
@@ -61,6 +84,8 @@ public class BlockDetection extends LinearOpMode
 
         telemetry.setDisplayFormat(Telemetry.DisplayFormat.MONOSPACE);
         waitForStart();
+        double AngV;
+        double ForV;
         // WARNING:  To be able to view the stream preview on the Driver Station, this code runs in INIT mode.
         while (opModeIsActive() || opModeInInit())
         {
@@ -80,14 +105,25 @@ public class BlockDetection extends LinearOpMode
                     RotatedRect boxFit = b.getBoxFit();
                 }
                 MoveTo = blobs.get(0).getBoxFit().center;
+                /*AngV = -Math.signum(MoveTo.x-160)/200;
+                AngV = Math.min(AngV*Math.abs(MoveTo.x-160), 0.3);
+                if (Math.abs(MoveTo.x-160) < 10) {
+                    AngV = 0;
+                }*/
+                ForV = -(MoveTo.y-210)/80;
+                if (Math.abs(MoveTo.y-210) < 10) {
+                    ForV = 0;
+                }
                 telemetry.addData("MoveTo", MoveTo);
-                /*drive.setDrivePowers(new PoseVelocity2d(
+                telemetry.addData("Ang V", AngV);
+
+                drive.setDrivePowers(new PoseVelocity2d(
                         new Vector2d(
-                                -(MoveTo.y-220)/80,
+                                ForV,
                                 0
                         ),
-                        (-Math.abs(MoveTo.x-160)/(MoveTo.x-160))/5
-                ));*/
+                        AngV
+                ));
             } else {
                 drive.setDrivePowers(new PoseVelocity2d(
                         new Vector2d(
