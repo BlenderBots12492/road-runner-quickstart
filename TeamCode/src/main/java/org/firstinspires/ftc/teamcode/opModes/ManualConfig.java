@@ -54,6 +54,11 @@ public class ManualConfig extends LinearOpMode {
                 if (gamepad2.a) {
                     slideRotatorEnc.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     slideExtenderEnc.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    slideRotator.setTargetPosition((int) Math.round(45/0.0244));
+                    slideRotator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    //slideRotator.setPower(-1);
+                    while (slideRotator.isBusy()) { sleep(100); }
+                    slideRotator.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 }
             }
         }
