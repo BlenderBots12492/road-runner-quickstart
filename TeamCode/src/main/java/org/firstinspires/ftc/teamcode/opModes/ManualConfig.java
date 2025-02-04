@@ -16,8 +16,6 @@ public class ManualConfig extends LinearOpMode {
     private DcMotor rightSlide;
     private DcMotor leftSlide;
     private DcMotor slideRotator;
-    private DcMotor slideExtenderEnc;
-    private DcMotor slideRotatorEnc;
     @Override
     public void runOpMode() {
 
@@ -25,12 +23,10 @@ public class ManualConfig extends LinearOpMode {
         leftSlide = hardwareMap.get(DcMotor.class, "leftSlide");
         slideRotator = hardwareMap.get(DcMotor.class, "slideRotator");
 
-        slideExtenderEnc = hardwareMap.get(DcMotor.class, "leftSlide");
-        slideRotatorEnc = hardwareMap.get(DcMotor.class, "slideRotator");
-
         slideRotator.setDirection(DcMotorSimple.Direction.REVERSE);
-        slideRotatorEnc.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        slideExtenderEnc.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        slideRotator.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         waitForStart();
 
@@ -52,11 +48,12 @@ public class ManualConfig extends LinearOpMode {
                     slideRotator.setPower(-gamepad2.right_stick_y);
                 }
                 if (gamepad2.a) {
-                    slideRotatorEnc.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    slideExtenderEnc.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    slideRotator.setTargetPosition((int) Math.round(45/0.0244));
+                    slideRotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    slideRotator.setTargetPosition((int) Math.round(-45/0.0244));
                     slideRotator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    //slideRotator.setPower(-1);
+                    slideRotator.setPower(1);
                     while (slideRotator.isBusy()) { sleep(100); }
                     slideRotator.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 }

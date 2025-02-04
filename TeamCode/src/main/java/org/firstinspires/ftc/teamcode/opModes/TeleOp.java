@@ -33,10 +33,10 @@ public class TeleOp extends LinearOpMode {
     private PositionVelocityPair slideExtVal;
     private PositionVelocityPair slideRotVal;
     public double getSlideAngle() {
-        return(slideRotVal.position * 0.0244);
+        return slideRotVal.position * 0.0244;
     }
     public double getHorizontalExtention() {
-        return(slideExtVal.position * Math.cos(Math.toRadians(getSlideAngle())) * -1);
+        return slideExtVal.position * Math.cos(Math.toRadians(getSlideAngle())) * -1;
     }
 
     @Override
@@ -67,6 +67,9 @@ public class TeleOp extends LinearOpMode {
          */
         slideRotatorEnc.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         slideExtenderEnc.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        slideRotator.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         waitForStart();
 
@@ -186,6 +189,8 @@ public class TeleOp extends LinearOpMode {
 
                 telemetry.addLine().addData("SlidePosHorizontal", getHorizontalExtention());
                 telemetry.addLine().addData("SlidePos", slideExtVal.position);
+                telemetry.addLine().addData("SlidePosTest", rightSlide.getCurrentPosition());
+                telemetry.addLine().addData("SlidePosTest2", leftSlide.getCurrentPosition());
                 telemetry.addLine().addData("SlideAng", getSlideAngle());
                 telemetry.addLine().addData("clawArm", clawArmPos);
 

@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 @Autonomous(name = "Auto Clip New", group = "Concept")
 public class AutomaticClip extends LinearOpMode {
-    private Pose2d initialPose = new Pose2d(-2.25, 61.7, Math.toRadians(90));
+    private Pose2d initialPose = new Pose2d(-4.25, 61.7, Math.toRadians(90));
     private MecanumDrive drive;
     private static DcMotor leftSlide;
     private static DcMotor rightSlide;
@@ -24,32 +24,23 @@ public class AutomaticClip extends LinearOpMode {
     private static Servo clawArm;
     private static Servo clawWrist;
     private static ElapsedTime runtime = new ElapsedTime();
-    public void slide(double distance) {
-        while (opModeIsActive()) {
-            if ((leftSlide.getCurrentPosition())+10 < distance) {
-                leftSlide.setPower(-1);
-                rightSlide.setPower(-1);
-            } else if (leftSlide.getCurrentPosition()-10 > distance) {
-                leftSlide.setPower(1);
-                rightSlide.setPower(1);
-            } else {
-                leftSlide.setPower(0.06);
-                rightSlide.setPower(0.06);
-                return;
-            }
-        }
+    public void slide(int distance) {
+        leftSlide.setTargetPosition(distance);
+        rightSlide.setTargetPosition(distance);
+        leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
     public void rotateSlide(double angle) {
-        double distance = angle/0.0244;
-        while (opModeIsActive()) {
-            if (slideRotator.getCurrentPosition()+10 < distance) {// + = D
-                slideRotator.setPower(1);
-            } else if (slideRotator.getCurrentPosition()-10 > distance) {
-                slideRotator.setPower(-1);
-            } else {
-                slideRotator.setPower(0);
-                return;
-            }
+        slideRotator.setTargetPosition((int) Math.round(angle/0.0244));
+        slideRotator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        slideRotator.setPower(1);
+    }
+    public boolean isBusy() {
+        return leftSlide.isBusy() && rightSlide.isBusy() && slideRotator.isBusy();
+    }
+    public void waitBusy() {
+        while (!isBusy() && opModeIsActive()) {
+            sleep(100);
         }
     }
     public void claw(boolean open) {
@@ -72,8 +63,8 @@ public class AutomaticClip extends LinearOpMode {
         leftSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         slideRotator.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        int back = 7;
-        int forward = 60;
+        int back = 5;
+        int forward = 65;
         int sideways = -14;
         int startPush = -45;
         TrajectoryActionBuilder tab1 = drive.actionBuilder(initialPose)
@@ -102,33 +93,28 @@ public class AutomaticClip extends LinearOpMode {
                 .strafeTo(new Vector2d(startPush+sideways+3, forward+15));
         Action Wait = tab5.build();
 
-
-
-
-
-
         waitForStart();
         //sleep(100);
-        rotateSlide(80);
+        rotateSlide(78);
         claw(false);
         clawArm.setPosition(0);
         sleep(400);
         if (isStopRequested()) return;
-        slide(-100);
-        if (isStopRequested()) return;
         Actions.runBlocking(ToBar);
         if (isStopRequested()) return;
-        //rotateSlide(50, -1);
-        slide(-680);
-        //clawArm.setPosition(0.25);
+        waitBusy();
+        slide(600);
+        waitBusy();
         claw(true);
         if (isStopRequested()) return;
         sleep(100);
         if (isStopRequested()) return;
-        rotateSlide(45);
-        slide(0);
+        leftSlide.setPower(0);
+        rightSlide.setPower(0);
+        slideRotator.setPower(-1);
+        sleep(400);
+        slideRotator.setPower(0);
 
-        if (isStopRequested()) return;
         Actions.runBlocking(ToSampleA);
         if (isStopRequested()) return;
         Actions.runBlocking(ToSampleB);
