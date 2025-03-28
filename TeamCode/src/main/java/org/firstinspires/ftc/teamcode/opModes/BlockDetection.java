@@ -96,24 +96,15 @@ public class BlockDetection extends LinearOpMode
     }
     private Pose2d initialPose = new Pose2d(38, 61.7, Math.toRadians(270));
     private void bend() {
-        double distance = 0;
         claw.setPosition(1);
         sleep(300);
-        while (opModeIsActive()) {
-            if (slideRotator.getCurrentPosition() + 10 < distance) {
-                slideRotator.setPower(1);
-            } else if (slideRotator.getCurrentPosition() - 10 > distance) {
-                slideRotator.setPower(-1);
-            } else {
-                slideRotator.setPower(0);
-                claw.setPosition(0);
-                sleep(300);
-                slideRotator.setPower(1);
-                sleep(1000);
-                slideRotator.setPower(0);
-                return;
-            }
-        }
+        rotateSlide(0);
+        slideRotator.setPower(0);
+        claw.setPosition(0);
+        sleep(300);
+        slideRotator.setPower(1);
+        sleep(1000);
+        slideRotator.setPower(0);
     }
     private void reachBasket() {
         sleep(100);
@@ -167,7 +158,7 @@ public class BlockDetection extends LinearOpMode
                 }
                 //AngV = AngPID.control(MoveTo.x);
 
-                ForV = min(max(0.2, -(MoveTo.y-230)/120), 0.5);
+                ForV = Math.signum(-(MoveTo.y-230))*min(max(0.2, Math.abs((MoveTo.y-230)/100)), 0.4);
                 if (Math.abs(MoveTo.y-230) < 10) {
                     ForV = 0;
                 }
@@ -245,11 +236,12 @@ public class BlockDetection extends LinearOpMode
         waitForStart();
         //PID AngPID = new PID(0.01, 0, 0.01, 160);
         // WARNING:  To be able to view the stream preview on the Driver Station, this code runs in INIT mode.
-        Actions.runBlocking(ToBasket1);
+        grabBlock();
+        /*Actions.runBlocking(ToBasket1);
         reachBasket();
         Actions.runBlocking(ToBlock1);
         grabBlock();
         Actions.runBlocking(ToBasket1);
-        reachBasket();
+        reachBasket();*/
     }
 }

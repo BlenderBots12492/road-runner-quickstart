@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -76,11 +77,14 @@ public class TeleOp extends LinearOpMode {
         Encoder slideRotatorEnc1 = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "slideRotator")));
         Encoder slideExtention = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "leftSlide")));
 
-        double clawPos = claw.getPosition();
+        double clawPos = 0;
         double clawWristPos = clawWrist.getPosition();
         double clawArmPos = clawArm.getPosition();
         int counter = 0;
         //boolean slidesDown = false;
+        Gamepad.RumbleEffect Effect1 = new Gamepad.RumbleEffect.Builder()
+                .addStep(1, 1, 500)
+                .build();//  Rumble right motor 20% for 500 mSec
 
         if (opModeIsActive()) {
             // Put run blocks here.
@@ -100,6 +104,7 @@ public class TeleOp extends LinearOpMode {
                 if (getHorizontalExtention() > 1200) {
                     leftSlide.setPower(-1);
                     rightSlide.setPower(-1);
+                    gamepad2.runRumbleEffect(Effect1);
                 } else if (gamepad2.left_stick_y == 0) {
                     leftSlide.setPower(0.06);
                     rightSlide.setPower(0.06);
@@ -127,6 +132,7 @@ public class TeleOp extends LinearOpMode {
                 } else {
                     if (getSlideAngle() > 87) {
                         slideRotator.setPower(1);
+                        gamepad2.runRumbleEffect(Effect1);
                     } else if (gamepad2.right_stick_y == 0) {
                         slideRotator.setPower(0);
                     } else {
@@ -134,6 +140,7 @@ public class TeleOp extends LinearOpMode {
                         if (getHorizontalExtention() > 1200 || getHorizontalExtention() < -30) {
                             leftSlide.setPower(-1);
                             rightSlide.setPower(-1);
+                            gamepad2.runRumbleEffect(Effect1);
                         }
                     }
                 }
@@ -153,10 +160,10 @@ public class TeleOp extends LinearOpMode {
                         clawArm.setPosition((gamepad2.left_stick_x) * 1.5);
                     }*/
                 if (gamepad2.left_stick_x < -0.9 && clawArmPos > 0) {
-                    clawArmPos -= 0.01;
+                    clawArmPos -= 0.02;
                 }
                 if (gamepad2.left_stick_x > 0.9 && clawArmPos < 1) {
-                    clawArmPos += 0.01;
+                    clawArmPos += 0.02;
                 }
                 clawArm.setPosition(clawArmPos);
 
@@ -168,7 +175,6 @@ public class TeleOp extends LinearOpMode {
                     clawPos -= 0.2;
                 }
                 claw.setPosition(clawPos);
-
                 // here we are defining the variables for the gamepad motor powers
                 if (0.5 > gamepad1.right_trigger) {
                     gamepad1_leftstick_x = -1 * gamepad1.left_stick_x;

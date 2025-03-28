@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.opModes;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
@@ -23,23 +24,38 @@ public class AutomaticClip extends LinearOpMode {
     private static Servo claw;
     private static Servo clawArm;
     private static Servo clawWrist;
+    private static Action ToBar;
     private static ElapsedTime runtime = new ElapsedTime();
     public void slide(int distance) {
-        leftSlide.setTargetPosition(distance);
-        rightSlide.setTargetPosition(distance);
-        leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        while (opModeIsActive()) {
+            if (leftSlide.getCurrentPosition()+10 < distance) {
+                leftSlide.setPower(-1);
+                rightSlide.setPower(-1);
+            } else if (leftSlide.getCurrentPosition()-10 > distance) {
+                leftSlide.setPower(1);
+                rightSlide.setPower(1);
+            } else {
+                leftSlide.setPower(0.06);
+                rightSlide.setPower(0.06);
+                return;
+            }
+        }
     }
     public void rotateSlide(double angle) {
         slideRotator.setTargetPosition((int) Math.round(angle/0.0244));
         slideRotator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         slideRotator.setPower(1);
     }
+    public void rotateSlide(double angle, double power) {
+        slideRotator.setTargetPosition((int) Math.round(angle/0.0244));
+        slideRotator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        slideRotator.setPower(power);
+    }
     public boolean isBusy() {
-        return leftSlide.isBusy() && rightSlide.isBusy() && slideRotator.isBusy();
+        return Math.abs(slideRotator.getCurrentPosition() - slideRotator.getTargetPosition()) < 50;
     }
     public void waitBusy() {
-        while (!isBusy() && opModeIsActive()) {
+        while (isBusy() && opModeIsActive()) {
             sleep(100);
         }
     }
@@ -50,7 +66,35 @@ public class AutomaticClip extends LinearOpMode {
             claw.setPosition(0);
         }
     }
-
+    public void specimen() {
+        TrajectoryActionBuilder tab1 = drive.actionBuilder(drive.pose)
+                .lineToY(17);
+        ToBar = tab1.build();
+        rotateSlide(79, 0.7);
+        claw(false);
+        clawArm.setPosition(0.2); //TODO: adjust value
+        clawWrist.setPosition(0.8);
+        if (isStopRequested()) return;
+        Actions.runBlocking(ToBar);
+        if (isStopRequested()) return;
+        sleep(100);
+        drive.setDrivePowers(new PoseVelocity2d(new Vector2d(-0.7, 0), 0));
+        sleep(100);
+        drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), 0));
+        sleep(200);
+        slide(-1000);
+        claw(true);
+        if (isStopRequested()) return;
+        sleep(50);
+        if (isStopRequested()) return;
+        leftSlide.setPower(-1);
+        rightSlide.setPower(-1);
+        rotateSlide(25);
+        clawArm.setPosition(0.75); //TODO: Adjust Value
+        sleep(100);
+        leftSlide.setPower(0);
+        rightSlide.setPower(0);
+    }
 
     public void runOpMode() {
         drive = new MecanumDrive(hardwareMap, initialPose);
@@ -66,10 +110,10 @@ public class AutomaticClip extends LinearOpMode {
         int back = 5;
         int forward = 65;
         int sideways = -14;
-        int startPush = -45;
+        int startPush = -50;
         TrajectoryActionBuilder tab1 = drive.actionBuilder(initialPose)
-                .lineToY(20);
-        Action ToBar = tab1.build();
+                .strafeTo(new Vector2d(initialPose.position.x, 19));
+        ToBar = tab1.build();
         TrajectoryActionBuilder tab2= drive.actionBuilder(new Pose2d(-2.25, 32, Math.toRadians(90)))
                 .lineToY(40)
                 .strafeTo(new Vector2d(-35, 40))
@@ -92,36 +136,51 @@ public class AutomaticClip extends LinearOpMode {
                 .waitSeconds(2)
                 .strafeTo(new Vector2d(startPush+sideways+3, forward+15));
         Action Wait = tab5.build();
+        TrajectoryActionBuilder tab6 = drive.actionBuilder(new Pose2d(-50, 50, Math.toRadians(90)))
+                .lineToY(45)
+                .strafeTo(new Vector2d(5, 40))
+                .turnTo(90);
+        Action NearBar = tab6.build();
+        TrajectoryActionBuilder tab8 = drive.actionBuilder(new Pose2d(-50, 70, Math.toRadians(90)))
+                .lineToY(45)
+                .strafeTo(new Vector2d(5, 40))
+                .turnTo(90);
+        Action NearBarTwo = tab8.build();
+        TrajectoryActionBuilder tab7 = drive.actionBuilder(new Pose2d(0, 20, Math.toRadians(90)))
+                .lineToY(45)
+                .strafeTo(new Vector2d(-50, 70))
+                .waitSeconds(0.2);
+        Action toObserve = tab7.build();
 
         waitForStart();
-        //sleep(100);
-        rotateSlide(78);
+        rotateSlide(78, 0.5);
         claw(false);
         clawArm.setPosition(0);
-        sleep(400);
-        if (isStopRequested()) return;
-        Actions.runBlocking(ToBar);
-        if (isStopRequested()) return;
-        waitBusy();
-        slide(600);
-        waitBusy();
-        claw(true);
-        if (isStopRequested()) return;
-        sleep(100);
-        if (isStopRequested()) return;
-        leftSlide.setPower(0);
-        rightSlide.setPower(0);
-        slideRotator.setPower(-1);
-        sleep(400);
-        slideRotator.setPower(0);
-
+        sleep(600);
+        specimen();
         Actions.runBlocking(ToSampleA);
         if (isStopRequested()) return;
-        Actions.runBlocking(ToSampleB);
+        drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0.7, 0), 0));
+        sleep(200);
+        drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), 0));
+        claw(false);
+        sleep(200);
+        clawArm.setPosition(0);
+        Actions.runBlocking(NearBar);
+        specimen();
+        //Actions.runBlocking(ToSampleC);
         if (isStopRequested()) return;
-        Actions.runBlocking(ToSampleC);
+        //Actions.runBlocking(Wait);
+        Actions.runBlocking(toObserve);
+        drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0.7, 0), 0));
+        sleep(200);
+        drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), 0));
+        claw(false);
+        sleep(200);
+        clawArm.setPosition(0);
+        Actions.runBlocking(NearBarTwo);
+        specimen();
         if (isStopRequested()) return;
-        Actions.runBlocking(Wait);
-
+        Actions.runBlocking(toObserve);
     }
 }

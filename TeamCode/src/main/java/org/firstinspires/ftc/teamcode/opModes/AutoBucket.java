@@ -38,7 +38,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import java.lang.Math;
 import java.util.List;
 
-@Autonomous(name = "AutoPlasticContainer", group = "Concept")
+@Autonomous(name = "AutoBusket", group = "Concept")
 public class AutoBucket extends LinearOpMode {
     private Pose2d initialPose = new Pose2d(38, 61.7, Math.toRadians(270));
     private MecanumDrive drive;
@@ -51,8 +51,10 @@ public class AutoBucket extends LinearOpMode {
     private static ElapsedTime runtime = new ElapsedTime();
     private Point MoveTo;
     private ColorBlobLocatorProcessor colorLocator;
-    public void slide(double distance) {//-2385
+    public void slide(int distance) {
         while (opModeIsActive()) {
+            telemetry.addLine().addData("SlidePos", leftSlide.getCurrentPosition());
+            telemetry.update();
             if (leftSlide.getCurrentPosition()+10 < distance) {
                 leftSlide.setPower(-1);
                 rightSlide.setPower(-1);
@@ -62,6 +64,19 @@ public class AutoBucket extends LinearOpMode {
             } else {
                 leftSlide.setPower(0.06);
                 rightSlide.setPower(0.06);
+                return;
+            }
+        }
+    }
+    public void rotateSlidePrim(double angle) {
+        double distance = angle/0.0244;
+        while (opModeIsActive()) {
+            if (slideRotator.getCurrentPosition()+10 < distance) {
+                slideRotator.setPower(1);
+            } else if (slideRotator.getCurrentPosition()-10 > distance) {
+                slideRotator.setPower(-1);
+            } else {
+                slideRotator.setPower(0);
                 return;
             }
         }
@@ -81,51 +96,43 @@ public class AutoBucket extends LinearOpMode {
     private void reachBasket() {
         sleep(100);
         rotateSlide(60);
-        if (isStopRequested()) return;
         slide(-2700);
-        if (isStopRequested()) return;
-        //clawArm.setPosition(1);
         clawArm.setPosition(1);
-        if (isStopRequested()) return;
         sleep(500);
-        if (isStopRequested()) return;
         claw(true);
-        if (isStopRequested()) return;
         sleep(1000);
-        if (isStopRequested()) return;
         clawArm.setPosition(0);
-        if (isStopRequested()) return;
         sleep(500);
-        if (isStopRequested()) return;
         rotateSlide(65);
-        sleep(1000);
-        slide(-30);
-        sleep(1000);
+        sleep(500);
+        leftSlide.setPower(-1);
+        rightSlide.setPower(-1);
+        sleep(100);
         rotateSlide(45);
+        sleep(1000);
+        leftSlide.setPower(0);
+        rightSlide.setPower(0);
     }
     private void bend() {
-        double distance = 0;
-        claw.setPosition(1);
+        claw(true);
+        clawArm.setPosition(1);
         sleep(300);
-        while (opModeIsActive()) {
-            if (slideRotator.getCurrentPosition() + 10 < distance) {
-                slideRotator.setPower(1);
-            } else if (slideRotator.getCurrentPosition() - 10 > distance) {
-                slideRotator.setPower(-1);
-            } else {
-                slideRotator.setPower(0);
-                claw.setPosition(0);
-                sleep(300);
-                slideRotator.setPower(1);
-                sleep(1000);
-                slideRotator.setPower(0);
-                return;
-            }
+        rotateSlide(0);
+        if (slideRotator.getCurrentPosition() < 20) {
+            claw(false);
+            sleep(100);
+            clawArm.setPosition(0);
+            rotateSlide(45);
         }
     }
     private void grabBlock() {
         double ForV;
         double AngV;
+        int pxX = 160;
+        int pxY = 210;
+        int angS = 200;
+        int forS = 280;
+        rotateSlide(30);
         while (opModeIsActive() || opModeInInit())
         {
 
@@ -135,22 +142,20 @@ public class AutoBucket extends LinearOpMode {
 
             ColorBlobLocatorProcessor.Util.filterByArea(100, 20000, blobs);  // filter out very small blobs.
 
-
             // Display the size (area) and center location for each Blob.
             if (!blobs.isEmpty()) {
                 for (ColorBlobLocatorProcessor.Blob b : blobs) {
                     RotatedRect boxFit = b.getBoxFit();
                 }
                 MoveTo = blobs.get(0).getBoxFit().center;
-                AngV = -Math.signum(MoveTo.x-160)/200;
-                AngV = min(AngV*Math.abs(MoveTo.x-160), 0.3);
-                if (Math.abs(MoveTo.x-160) < 10) {
+                AngV = -Math.signum(MoveTo.x-pxX)/angS;
+                AngV = min(AngV*Math.abs(MoveTo.x-pxX), 0.3);
+                if (Math.abs(MoveTo.x-pxX) < 10) {
                     AngV = 0;
                 }
                 //AngV = AngPID.control(MoveTo.x);
-
-                ForV = min(max(0.2, -(MoveTo.y-230)/120), 0.5);
-                if (Math.abs(MoveTo.y-230) < 10) {
+                ForV = Math.signum(-(MoveTo.y-pxY))*min(max(0.2, Math.abs((MoveTo.y-pxY)/forS)), 0.4);
+                if (Math.abs(MoveTo.y-pxY) < 10) {
                     ForV = 0;
                 }
                 telemetry.addData("MoveTo", MoveTo);
@@ -165,7 +170,7 @@ public class AutoBucket extends LinearOpMode {
                 ));
                 if (ForV == 0 && AngV == 0) {
                     bend();
-                    return;
+                    if (claw.getPosition() < 0.5) {return;}
                 }
             } else {
                 //AngPID = new PID(0.01, 0, 0.01, 160);
@@ -203,23 +208,27 @@ public class AutoBucket extends LinearOpMode {
                 .setBlurSize(5)                               // Smooth the transitions between different colors in image
                 .build();
 
-
         VisionPortal portal = new VisionPortal.Builder()
                 .addProcessor(colorLocator)
                 .setCameraResolution(new Size(320, 240))
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
                 .build();
 
-        TrajectoryBuilder test1;
-
-
         TrajectoryActionBuilder tab1 = drive.actionBuilder(initialPose)
                 .waitSeconds(1)
                 .lineToY(39)
                 .turnTo(Math.toRadians(55))
-                .lineToY(49)
-                .strafeTo(new Vector2d(50.5, 50.5));
+                .lineToY(51)
+                .strafeTo(new Vector2d(51, 51));
         Action Action1 = tab1.build();
+
+        TrajectoryActionBuilder tab8 = drive.actionBuilder(new Pose2d(40, 30, Math.toRadians(270)))
+                .lineToY(39)
+                .turnTo(Math.toRadians(55))
+                .lineToY(51)
+                .strafeTo(new Vector2d(47, 58))
+                .waitSeconds(0.5);
+        Action ToBasket = tab8.build();
         TrajectoryActionBuilder tab3 = drive.actionBuilder(initialPose)
                 .lineToY(38);
         //.turnTo(Math.toRadians(270));
@@ -230,18 +239,13 @@ public class AutoBucket extends LinearOpMode {
                 .lineToX(24);
         Action TouchBottom2 = tab4.build();
         TrajectoryActionBuilder tab5 = drive.actionBuilder(new Pose2d(49, 49, Math.toRadians(45)))
-                .strafeToLinearHeading(new Vector2d(48, 30),  Math.toRadians(270));
+                .turnTo(Math.toRadians(270))
+                .strafeTo(new Vector2d(40, 39));
         Action Toblock1 = tab5.build();
         TrajectoryActionBuilder tab7 = drive.actionBuilder(new Pose2d(49, 49, Math.toRadians(45)))
-                .turnTo(Math.toRadians(280));
+                .turnTo(Math.toRadians(270))
+                .strafeTo(new Vector2d(57, 37));
         Action Toblock2 = tab7.build();
-        TrajectoryActionBuilder tab8 = drive.actionBuilder(new Pose2d(49, 49, Math.toRadians(280)))
-                .turnTo(Math.toRadians(45));
-        Action TurnBasket1 = tab8.build();
-
-        TrajectoryActionBuilder tab9 = drive.actionBuilder(new Pose2d(49, 49, Math.toRadians(260)))
-                .turnTo(Math.toRadians(45));
-        Action TurnBasket2 = tab9.build();
         TrajectoryActionBuilder tab6 = drive.actionBuilder(new Pose2d(49, 49, Math.toRadians(45)))
                 .turnTo(Math.toRadians(270))
                 .lineToY(36)
@@ -254,8 +258,15 @@ public class AutoBucket extends LinearOpMode {
                 .splineTo(new Vector2d(47, 40), Math.toRadians(270))
                 .waitSeconds(1);
         Action Action2 = tab2.build();
+        TrajectoryActionBuilder tab10 = drive.actionBuilder(initialPose)
+                .strafeTo(new Vector2d(35, 40))
+                .strafeTo(new Vector2d(35, 0))
+                .turnTo(180)
+                .strafeTo(new Vector2d(20, 0));
+        Action ToBar = tab10.build();
         waitForStart();
         clawArm.setPosition(0);
+        rotateSlide(45);
         if (isStopRequested()) return;
         Actions.runBlocking(Action1);
 
@@ -263,19 +274,17 @@ public class AutoBucket extends LinearOpMode {
         sleep(100);
         reachBasket();
         if (isStopRequested()) return;
+        //Actions.runBlocking(ToBar);
+        //slide(-400);
+        //clawArm.setPosition(0.4);
+
         Actions.runBlocking(Toblock1);
         grabBlock();
         if (isStopRequested()) return;
-        Actions.runBlocking(TurnBasket1);
+        Actions.runBlocking(ToBasket);
         if (isStopRequested()) return;
         reachBasket();
         if (isStopRequested()) return;
-        Actions.runBlocking(Toblock2);
-        if (isStopRequested()) return;
-        grabBlock();
-        if (isStopRequested()) return;
-        Actions.runBlocking(TurnBasket2);
-        if (isStopRequested()) return;
-        reachBasket();
+        Actions.runBlocking(ToBar);
     }
 }
