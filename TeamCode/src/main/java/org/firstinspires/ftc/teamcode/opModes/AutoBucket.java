@@ -38,7 +38,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import java.lang.Math;
 import java.util.List;
 
-@Autonomous(name = "AutoBusket", group = "Concept")
+@Autonomous(name = "AutoBucket", group = "Concept")
 public class AutoBucket extends LinearOpMode {
     private Pose2d initialPose = new Pose2d(38, 61.7, Math.toRadians(270));
     private MecanumDrive drive;

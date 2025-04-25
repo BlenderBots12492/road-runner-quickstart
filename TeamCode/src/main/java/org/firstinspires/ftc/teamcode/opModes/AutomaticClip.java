@@ -138,12 +138,12 @@ public class AutomaticClip extends LinearOpMode {
         Action Wait = tab5.build();
         TrajectoryActionBuilder tab6 = drive.actionBuilder(new Pose2d(-50, 50, Math.toRadians(90)))
                 .lineToY(45)
-                .strafeTo(new Vector2d(5, 40))
+                .strafeTo(new Vector2d(5, 35))
                 .turnTo(90);
         Action NearBar = tab6.build();
         TrajectoryActionBuilder tab8 = drive.actionBuilder(new Pose2d(-50, 70, Math.toRadians(90)))
                 .lineToY(45)
-                .strafeTo(new Vector2d(5, 40))
+                .strafeTo(new Vector2d(5, 35))
                 .turnTo(90);
         Action NearBarTwo = tab8.build();
         TrajectoryActionBuilder tab7 = drive.actionBuilder(new Pose2d(0, 20, Math.toRadians(90)))
