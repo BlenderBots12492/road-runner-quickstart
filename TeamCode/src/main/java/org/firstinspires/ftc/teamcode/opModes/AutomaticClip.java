@@ -28,10 +28,10 @@ public class AutomaticClip extends LinearOpMode {
     private static ElapsedTime runtime = new ElapsedTime();
     public void slide(int distance) {
         while (opModeIsActive()) {
-            if (leftSlide.getCurrentPosition()+10 < distance) {
+            if (rightSlide.getCurrentPosition()+10 < distance) {
                 leftSlide.setPower(-1);
                 rightSlide.setPower(-1);
-            } else if (leftSlide.getCurrentPosition()-10 > distance) {
+            } else if (rightSlide.getCurrentPosition()-10 > distance) {
                 leftSlide.setPower(1);
                 rightSlide.setPower(1);
             } else {
@@ -70,7 +70,7 @@ public class AutomaticClip extends LinearOpMode {
         TrajectoryActionBuilder tab1 = drive.actionBuilder(drive.pose)
                 .lineToY(17);
         ToBar = tab1.build();
-        rotateSlide(79, 0.7);
+        rotateSlide(81, 0.7);
         claw(false);
         clawArm.setPosition(0.2); //TODO: adjust value
         clawWrist.setPosition(0.8);
@@ -148,8 +148,7 @@ public class AutomaticClip extends LinearOpMode {
         Action NearBarTwo = tab8.build();
         TrajectoryActionBuilder tab7 = drive.actionBuilder(new Pose2d(0, 20, Math.toRadians(90)))
                 .lineToY(45)
-                .strafeTo(new Vector2d(-50, 70))
-                .waitSeconds(0.2);
+                .strafeTo(new Vector2d(-50, 70));
         Action toObserve = tab7.build();
 
         waitForStart();
@@ -172,6 +171,7 @@ public class AutomaticClip extends LinearOpMode {
         if (isStopRequested()) return;
         //Actions.runBlocking(Wait);
         Actions.runBlocking(toObserve);
+
         drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0.7, 0), 0));
         sleep(200);
         drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), 0));

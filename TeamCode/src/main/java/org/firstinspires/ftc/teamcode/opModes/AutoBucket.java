@@ -37,7 +37,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import java.lang.Math;
 import java.util.List;
-
 @Autonomous(name = "AutoBucket", group = "Concept")
 public class AutoBucket extends LinearOpMode {
     private Pose2d initialPose = new Pose2d(38, 61.7, Math.toRadians(270));
@@ -53,12 +52,12 @@ public class AutoBucket extends LinearOpMode {
     private ColorBlobLocatorProcessor colorLocator;
     public void slide(int distance) {
         while (opModeIsActive()) {
-            telemetry.addLine().addData("SlidePos", leftSlide.getCurrentPosition());
+            telemetry.addLine().addData("SlidePos", rightSlide.getCurrentPosition());
             telemetry.update();
-            if (leftSlide.getCurrentPosition()+10 < distance) {
+            if (rightSlide.getCurrentPosition()+10 < distance) {
                 leftSlide.setPower(-1);
                 rightSlide.setPower(-1);
-            } else if (leftSlide.getCurrentPosition()-10 > distance) {
+            } else if (rightSlide.getCurrentPosition()-10 > distance) {
                 leftSlide.setPower(1);
                 rightSlide.setPower(1);
             } else {
@@ -124,6 +123,7 @@ public class AutoBucket extends LinearOpMode {
             clawArm.setPosition(0);
             rotateSlide(45);
         }
+
     }
     private void grabBlock() {
         double ForV;
@@ -226,7 +226,7 @@ public class AutoBucket extends LinearOpMode {
                 .lineToY(39)
                 .turnTo(Math.toRadians(55))
                 .lineToY(51)
-                .strafeTo(new Vector2d(47, 58))
+                .strafeTo(new Vector2d(48, 55))
                 .waitSeconds(0.5);
         Action ToBasket = tab8.build();
         TrajectoryActionBuilder tab3 = drive.actionBuilder(initialPose)

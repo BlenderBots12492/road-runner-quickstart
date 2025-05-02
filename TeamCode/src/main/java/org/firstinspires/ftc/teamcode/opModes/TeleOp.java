@@ -37,7 +37,7 @@ public class TeleOp extends LinearOpMode {
         return slideRotVal.position * 0.0244;
     }
     public double getHorizontalExtention() {
-        return slideExtVal.position * Math.cos(Math.toRadians(getSlideAngle())) * -1;
+        return rightSlide.getCurrentPosition() * Math.cos(Math.toRadians(getSlideAngle())) * -1;
     }
 
     @Override
@@ -194,11 +194,9 @@ public class TeleOp extends LinearOpMode {
                 leftBack.setPower(gamepad1_leftstick_y + gamepad1_leftstick_x + gamepad1_rightstick_x);
 
                 telemetry.addLine().addData("SlidePosHorizontal", getHorizontalExtention());
-                telemetry.addLine().addData("SlidePos", slideExtVal.position);
-                telemetry.addLine().addData("SlidePosTest", rightSlide.getCurrentPosition());
-                telemetry.addLine().addData("SlidePosTest2", leftSlide.getCurrentPosition());
+                telemetry.addLine().addData("SlidePos", rightSlide.getCurrentPosition());
                 telemetry.addLine().addData("SlideAng", getSlideAngle());
-                telemetry.addLine().addData("clawArm", clawArmPos);
+                telemetry.addLine().addData("clawArm Pos", clawArmPos);
 
                 telemetry.update();
 
