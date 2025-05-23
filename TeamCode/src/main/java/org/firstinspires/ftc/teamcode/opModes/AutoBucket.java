@@ -37,7 +37,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import java.lang.Math;
 import java.util.List;
-@Autonomous(name = "AutoBucket", group = "Concept")
+@Autonomous(name = "AutoBusket", group = "Concept")
 public class AutoBucket extends LinearOpMode {
     private Pose2d initialPose = new Pose2d(38, 61.7, Math.toRadians(270));
     private MecanumDrive drive;
@@ -117,13 +117,11 @@ public class AutoBucket extends LinearOpMode {
         clawArm.setPosition(1);
         sleep(300);
         rotateSlide(0);
-        if (slideRotator.getCurrentPosition() < 20) {
-            claw(false);
-            sleep(100);
-            clawArm.setPosition(0);
-            rotateSlide(45);
-        }
-
+        while (slideRotator.getCurrentPosition() > 10) {sleep(100);}
+        claw(false);
+        sleep(100);
+        clawArm.setPosition(0);
+        rotateSlide(45);
     }
     private void grabBlock() {
         double ForV;
@@ -224,9 +222,9 @@ public class AutoBucket extends LinearOpMode {
 
         TrajectoryActionBuilder tab8 = drive.actionBuilder(new Pose2d(40, 30, Math.toRadians(270)))
                 .lineToY(39)
-                .turnTo(Math.toRadians(55))
+                .turnTo(Math.toRadians(85))
                 .lineToY(51)
-                .strafeTo(new Vector2d(48, 55))
+                .strafeTo(new Vector2d(51, 51))
                 .waitSeconds(0.5);
         Action ToBasket = tab8.build();
         TrajectoryActionBuilder tab3 = drive.actionBuilder(initialPose)
@@ -239,7 +237,7 @@ public class AutoBucket extends LinearOpMode {
                 .lineToX(24);
         Action TouchBottom2 = tab4.build();
         TrajectoryActionBuilder tab5 = drive.actionBuilder(new Pose2d(49, 49, Math.toRadians(45)))
-                .turnTo(Math.toRadians(270))
+                .turnTo(Math.toRadians(240))
                 .strafeTo(new Vector2d(40, 39));
         Action Toblock1 = tab5.build();
         TrajectoryActionBuilder tab7 = drive.actionBuilder(new Pose2d(49, 49, Math.toRadians(45)))
@@ -285,6 +283,6 @@ public class AutoBucket extends LinearOpMode {
         if (isStopRequested()) return;
         reachBasket();
         if (isStopRequested()) return;
-        Actions.runBlocking(ToBar);
+        //Actions.runBlocking(ToBar);
     }
 }

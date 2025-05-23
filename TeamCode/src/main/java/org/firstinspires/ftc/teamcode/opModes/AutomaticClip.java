@@ -72,17 +72,17 @@ public class AutomaticClip extends LinearOpMode {
         ToBar = tab1.build();
         rotateSlide(81, 0.7);
         claw(false);
-        clawArm.setPosition(0.2); //TODO: adjust value
+        clawArm.setPosition(0.1); //TODO: adjust value
         clawWrist.setPosition(0.8);
         if (isStopRequested()) return;
         Actions.runBlocking(ToBar);
         if (isStopRequested()) return;
         sleep(100);
-        drive.setDrivePowers(new PoseVelocity2d(new Vector2d(-0.7, 0), 0));
+        drive.setDrivePowers(new PoseVelocity2d(new Vector2d(-0.5, 0), 0));
         sleep(100);
         drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), 0));
         sleep(200);
-        slide(-1000);
+        slide(-800);
         claw(true);
         if (isStopRequested()) return;
         sleep(50);
@@ -90,7 +90,7 @@ public class AutomaticClip extends LinearOpMode {
         leftSlide.setPower(-1);
         rightSlide.setPower(-1);
         rotateSlide(25);
-        clawArm.setPosition(0.75); //TODO: Adjust Value
+        clawArm.setPosition(0.6); //TODO: Adjust Value
         sleep(100);
         leftSlide.setPower(0);
         rightSlide.setPower(0);
@@ -108,7 +108,7 @@ public class AutomaticClip extends LinearOpMode {
         rightSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         slideRotator.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         int back = 5;
-        int forward = 65;
+        int forward = 68;
         int sideways = -14;
         int startPush = -50;
         TrajectoryActionBuilder tab1 = drive.actionBuilder(initialPose)
@@ -138,12 +138,12 @@ public class AutomaticClip extends LinearOpMode {
         Action Wait = tab5.build();
         TrajectoryActionBuilder tab6 = drive.actionBuilder(new Pose2d(-50, 50, Math.toRadians(90)))
                 .lineToY(45)
-                .strafeTo(new Vector2d(5, 35))
+                .strafeTo(new Vector2d(8, 35))
                 .turnTo(90);
         Action NearBar = tab6.build();
         TrajectoryActionBuilder tab8 = drive.actionBuilder(new Pose2d(-50, 70, Math.toRadians(90)))
                 .lineToY(45)
-                .strafeTo(new Vector2d(5, 35))
+                .strafeTo(new Vector2d(0, 35))
                 .turnTo(90);
         Action NearBarTwo = tab8.build();
         TrajectoryActionBuilder tab7 = drive.actionBuilder(new Pose2d(0, 20, Math.toRadians(90)))
@@ -159,11 +159,11 @@ public class AutomaticClip extends LinearOpMode {
         specimen();
         Actions.runBlocking(ToSampleA);
         if (isStopRequested()) return;
-        drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0.7, 0), 0));
-        sleep(200);
-        drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), 0));
+        //drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0.7, 0), 0));
+        //sleep(200);
+        //drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), 0));
         claw(false);
-        sleep(200);
+        sleep(300);
         clawArm.setPosition(0);
         Actions.runBlocking(NearBar);
         specimen();

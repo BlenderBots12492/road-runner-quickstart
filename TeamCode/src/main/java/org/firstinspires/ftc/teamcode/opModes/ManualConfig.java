@@ -51,6 +51,11 @@ public class ManualConfig extends LinearOpMode {
                     slideRotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    slideRotator.setTargetPosition((int) Math.round(29.5728/0.0244));
+                    slideRotator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    slideRotator.setPower(1);
+                    while (slideRotator.isBusy()) { sleep(100); }
+                    slideRotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     slideRotator.setTargetPosition((int) Math.round(-45/0.0244));
                     slideRotator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     slideRotator.setPower(1);
